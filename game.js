@@ -16,6 +16,12 @@ var config = {
 var game = new Phaser.Game(config);
 var tank;
 
+// Keyboard-keys
+let keyA;
+let keyS;
+let keyD;
+let keyW;
+
 function preload() {
     this.load.baseURL = 'https://examples.phaser.io/assets/games/';
 
@@ -33,6 +39,12 @@ function create() {
     tank.x = 400;
     tank.y = 300;
     tank.body.setCollideWorldBounds(true);
+
+    // Tank movement - keys declaration
+    keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 }
 
 function update() {
@@ -40,16 +52,17 @@ function update() {
     // Tank - movement
     tank.body.velocity.x = 0;
     tank.body.velocity.y = 0;
-    if (cursors.left.isDown) {
+    tank.rotation = Phaser.Math.Angle.Between(tank.x, tank.y, this.input.mousePointer.x, this.input.mousePointer.y);
+    if (keyA.isDown) {
         tank.body.velocity.x = -250;
     }
-    if (cursors.right.isDown) {
+    if (keyD.isDown) {
         tank.body.velocity.x = 250;
     }
-    if (cursors.up.isDown) {
+    if (keyW.isDown) {
         tank.body.velocity.y = -250;
     }
-    if (cursors.down.isDown) {
+    if (keyS.isDown) {
         tank.body.velocity.y = 250;
     }
 }
