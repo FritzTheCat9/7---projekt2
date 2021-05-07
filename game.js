@@ -57,7 +57,7 @@ function create() {
         repeat: -1
     });
 
-    // Tank - turret
+    // Turret
     turret = this.physics.add.sprite(48, 28, "tankAtlas", "turret");
     turret.setOrigin(0.5, 0.5);
     turret.x = 400;
@@ -83,6 +83,13 @@ function update() {
         tank.body.velocity.y = 250;
     }
 
+    // Tank - animations
+    if (keyA.isDown || keyD.isDown || keyW.isDown || keyS.isDown) {
+        tank.anims.play('anim_tank_move', true);
+    } else {
+        tank.anims.play('anim_tank_move', false);
+    }
+
     // Turret - movement
     turret.body.velocity.x = 0;
     turret.body.velocity.y = 0;
@@ -99,12 +106,4 @@ function update() {
     if (keyS.isDown) {
         turret.body.velocity.y = 250;
     }
-
-    // Tank - animations
-    if (keyA.isDown || keyD.isDown || keyW.isDown || keyS.isDown) {
-        tank.anims.play('anim_tank_move', true);
-    } else {
-        tank.anims.play('anim_tank_move', false);
-    }
-
 }
