@@ -25,7 +25,6 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
         if (bullet) {
             bullet.fire(x, y, velocityX, velocityY);
         }
-        console.log("C");
 
 
     }
@@ -49,7 +48,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityY(velocityY / this.dzielnik);
         this.rotation = Phaser.Math.Angle.Between(x, y, game.input.mousePointer.x, game.input.mousePointer.y) + 1.57;
         // this.rotation = Phaser.Math.Angle.Between(x, y, this.input.mousePointer.x, this.input.mousePointer.y) + 1.57;
-        console.log("A");
         // console.log(velocityY);
         // console.log("------------------------");
     }
@@ -63,7 +61,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
             this.setActive(false);
             this.setVisible(false);
         }
-        console.log("B");
 
     }
 }
@@ -73,10 +70,8 @@ class OurScene extends Phaser.Scene {
         super();
     }
 
-
-
     tank;
-    tank_velocity = 250;
+    tank_velocity = 1;
     turret;
 
     // bullets;
@@ -151,24 +146,67 @@ class OurScene extends Phaser.Scene {
         this.bulletGroup = new BulletGroup(this);
 
     }
+    tankRotation() {
+        let angle = Phaser.Math.RadToDeg(this.tank.rotation) % 360;
+        if (angle < 0) {
+            angle = 180 + (180 + angle);
+        }
+        console.log(angle);
+        let newX, newY; // P1 P2
+        let x = 2 * this.tank_velocity * Math.sin(angle);
+        if (angle > 180) {
+            x = 2 * this.tank_velocity * Math.sin(360 - angle);
+        } else {
+            x = 2 * this.tank_velocity * Math.sin(angle);
+        }
+        let y = Math.sqrt(Math.abs(this.tank_velocity * this.tank_velocity - (x * x)));
+        if (angle >= 0 && angle < 90) {
+            newY = this.tank.y - x;
+            newX = this.tank.x - y;
+            console.log("cwiartka 1")
+        } else if (angle >= 90 && angle < 180) {
+            newY = this.tank.y - x;
+            newX = this.tank.x + y;
+            console.log("cwiartka 2")
 
+        }
+        else if (angle >= 180 && angle < 270) {
+            newY = this.tank.y + x;
+            newX = this.tank.x + y;
+            console.log("cwiartka 3")
+
+        }
+        else if (angle >= 270 && angle < 360) {
+            newY = this.tank.y + x;
+            newX = this.tank.x - y;
+            console.log("cwiartka 4")
+
+        }
+        // console.log(this.tank.x);
+        // console.log(this.tank.y);
+        // console.log("---------------------------------");
+        // console.log(newX);
+        // console.log(newY);
+
+        this.tank.x = newX;
+        this.tank.y = newY;
+    }
     update() {
 
         // Tank - movement
         this.tank.body.velocity.x = 0;
         this.tank.body.velocity.y = 0;
-        this.tank.rotation = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, this.input.mousePointer.x, this.input.mousePointer.y);
         if (this.keyA.isDown) {
-            this.tank.body.velocity.x = -this.tank_velocity;
+            this.tank.rotation -= 0.01;
         }
         if (this.keyD.isDown) {
-            this.tank.body.velocity.x = this.tank_velocity;
+            this.tank.rotation += 0.01;
         }
         if (this.keyW.isDown) {
-            this.tank.body.velocity.y = -this.tank_velocity;
+            this.tankRotation();
         }
         if (this.keyS.isDown) {
-            this.tank.body.velocity.y = this.tank_velocity;
+            this.tankRotation();
         }
 
         // Tank - animations
@@ -182,17 +220,14 @@ class OurScene extends Phaser.Scene {
         this.turret.body.velocity.x = 0;
         this.turret.body.velocity.y = 0;
         this.turret.rotation = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, this.input.mousePointer.x, this.input.mousePointer.y);
-        if (this.keyA.isDown) {
-            this.turret.body.velocity.x = -this.tank_velocity;
-        }
-        if (this.keyD.isDown) {
-            this.turret.body.velocity.x = this.tank_velocity;
-        }
+
         if (this.keyW.isDown) {
-            this.turret.body.velocity.y = -this.tank_velocity;
+            this.turret.y = this.tank.y;
+            this.turret.x = this.tank.x;
         }
         if (this.keyS.isDown) {
-            this.turret.body.velocity.y = this.tank_velocity;
+            this.turret.y = this.tank.y;
+            this.turret.x = this.tank.x;
         }
 
         // Bullets
