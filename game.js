@@ -38,7 +38,6 @@ function create() {
     tank.setOrigin(0.5, 0.5);
     tank.x = 400;
     tank.y = 300;
-    tank.body.setCollideWorldBounds(true);
 
     // Tank movement - keys declaration
     keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -57,6 +56,12 @@ function create() {
         }),
         repeat: -1
     });
+
+    // Tank - turret
+    turret = this.physics.add.sprite(48, 28, "tankAtlas", "turret");
+    turret.setOrigin(0.5, 0.5);
+    turret.x = 400;
+    turret.y = 300;
 }
 
 function update() {
@@ -76,6 +81,23 @@ function update() {
     }
     if (keyS.isDown) {
         tank.body.velocity.y = 250;
+    }
+
+    // Turret - movement
+    turret.body.velocity.x = 0;
+    turret.body.velocity.y = 0;
+    turret.rotation = Phaser.Math.Angle.Between(tank.x, tank.y, this.input.mousePointer.x, this.input.mousePointer.y);
+    if (keyA.isDown) {
+        turret.body.velocity.x = -250;
+    }
+    if (keyD.isDown) {
+        turret.body.velocity.x = 250;
+    }
+    if (keyW.isDown) {
+        turret.body.velocity.y = -250;
+    }
+    if (keyS.isDown) {
+        turret.body.velocity.y = 250;
     }
 
     // Tank - animations
