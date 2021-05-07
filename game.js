@@ -23,10 +23,10 @@ let keyD;
 let keyW;
 
 function preload() {
-    this.load.baseURL = 'https://examples.phaser.io/assets/games/';
+    this.load.baseURL = 'https://examples.phaser.io/';
 
-
-    this.load.image('tank', 'tanks/tank1.png');
+    this.load.image('tank', 'assets/games/tanks/tank1.png');
+    this.load.atlas('tankAtlas', 'assets/games/tanks/tanks.png', 'assets/games/tanks/tanks.json');
 }
 
 function create() {
@@ -45,6 +45,18 @@ function create() {
     keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+
+    // Tank - animations
+    this.anims.create({
+        key: "anim_tank_move",
+        frameRate: 10,
+        frames: this.anims.generateFrameNames("tankAtlas", {
+            prefix: "tank",
+            start: 1,
+            end: 6
+        }),
+        repeat: -1
+    });
 }
 
 function update() {
@@ -65,4 +77,12 @@ function update() {
     if (keyS.isDown) {
         tank.body.velocity.y = 250;
     }
+
+    // Tank - animations
+    if (keyA.isDown || keyD.isDown || keyW.isDown || keyS.isDown) {
+        tank.anims.play('anim_tank_move', true);
+    } else {
+        tank.anims.play('anim_tank_move', false);
+    }
+
 }
