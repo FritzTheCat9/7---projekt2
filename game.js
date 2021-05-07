@@ -196,16 +196,12 @@ class OurScene extends Phaser.Scene {
         }
 
         // Bullets
-        this.input.on('pointerdown', pointer => {
+        if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
             this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
-                pointer.x - this.turret.x, pointer.y - this.turret.y,
+                this.input.mousePointer.x - this.turret.x, this.input.mousePointer.y - this.turret.y,
             );
-            console.log("D");
-            // console.log("Hello");
-            // sleep(2000);
-            // console.log("World!");
+        }
 
-        })
     }
 }
 var gameWidth = 800;
