@@ -15,6 +15,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 var tank;
+var turret;
 
 // Keyboard-keys
 let keyA;
