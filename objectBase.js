@@ -72,6 +72,9 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
 class Tank extends Phaser.Physics.Arcade.Sprite {
     tank_velocity = 5;
+    tank_rotation_speed = 0.05;
+    move_animation = 'anim_tank_move';
+
     constructor(scene, x, y, turret, tank, anim_tank_move, tankAtlas) {
         super(scene, x, y, tank)
         // Tank
@@ -79,6 +82,7 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         this.tank.setOrigin(0.5, 0.5);
         this.tank.x = x;
         this.tank.y = y;
+        this.move_animation = anim_tank_move;
 
         // Tank - animations
         scene.anims.create({
@@ -112,13 +116,14 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         this.scene.explosion.x = this.tank.x;
         this.scene.explosion.y = this.tank.y;
         this.scene.explosion.anims.play("anim_tank_destroyed", false);
+        this.scene.explosionSound.play();
 
     }
     rotate(flag) {
         if (flag) {
-            this.tank.rotation -= 0.01;
+            this.tank.rotation -= this.tank_rotation_speed;
         } else {
-            this.tank.rotation += 0.01;
+            this.tank.rotation += this.tank_rotation_speed;
         }
     }
     tankRotation(flag) {
@@ -135,9 +140,9 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
     animation(flag) {
         // Tank - animations
         if (flag) {
-            this.tank.anims.play('anim_tank_move', true);
+            this.tank.anims.play(this.move_animation, true);
         } else {
-            this.tank.anims.play('anim_tank_move', false);
+            this.tank.anims.play(this.move_animation, false);
         }
     }
 }
@@ -202,16 +207,10 @@ class OurScene extends Phaser.Scene {
     //Text
     text;
 
-    pointer;
 
-    tank;
-    tank_velocity = 5;
-    tank_rotation_speed = 0.05;
+    pointer;
     tank_HP = 50;
 
-    turret;
-
-    bulletGroup;
     bullet_speed = 600;
 
     money = 0;
@@ -226,6 +225,7 @@ class OurScene extends Phaser.Scene {
 
     blasterSound;
     explosionSound;
+    powerupSound;
 
     background;
 
@@ -245,6 +245,7 @@ class OurScene extends Phaser.Scene {
         // Sounds
         this.load.audio('blasterSound', '/assets/audio/SoundEffects/blaster.mp3');
         this.load.audio('explosionSound', '/assets/audio/SoundEffects/explosion.mp3');      // this.explosionSound.play();
+        this.load.audio('powerupSound', '/assets/audio/SoundEffects/key.wav');              // this.powerupSound.play();
 
         // Backgrounds
         this.load.image('lightGrass', '/assets/games/tanks/light_grass.png');
@@ -271,13 +272,12 @@ class OurScene extends Phaser.Scene {
         this.spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
-        this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_tank_move", "tankAtlas");
-
-        //Collisons
+        this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
 
         // Sound
         this.blasterSound = this.sound.add("blasterSound");
         this.explosionSound = this.sound.add("explosionSound");
+        this.powerupSound = this.sound.add("powerupSound");
 
         // Camera
         this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
@@ -298,7 +298,7 @@ class OurScene extends Phaser.Scene {
             repeat: 0
         });
 
-        // Explosion
+        // Diamond
         this.diamond = this.physics.add.sprite(200, 100, 'diamond');
         this.anims.create({
             key: "anim_diamond",
@@ -307,7 +307,29 @@ class OurScene extends Phaser.Scene {
             repeat: -1
         });
 
+        // Tank - animations
+        this.anims.create({
+            key: "anim_tank_move",
+            frameRate: 10,
+            frames: this.anims.generateFrameNames("tankAtlas", {
+                prefix: "tank",
+                start: 1,
+                end: 6
+            }),
+            repeat: -1
+        });
 
+        // Enemy Tank - animations
+        this.anims.create({
+            key: "anim_enemy_tank_move",
+            frameRate: 10,
+            frames: this.anims.generateFrameNames("enemyTankAtlas", {
+                prefix: "tank",
+                start: 1,
+                end: 6
+            }),
+            repeat: -1
+        });
     }
 
 
@@ -342,7 +364,8 @@ class OurScene extends Phaser.Scene {
         }
 
         //AI
-        // this.enemies.AI.revive();
+        this.enemies.animation(true);
+        //this.enemies.AI.revive();
 
         // Text
         this.updateText();
@@ -380,6 +403,7 @@ class OurScene extends Phaser.Scene {
     collectDiamond(diamond) {
         diamond.disableBody(true, true);
         this.tank_HP = 50;
+        this.powerupSound.play();
     }
     updateText() {
         this.data.set('HP', this.tank_HP);
