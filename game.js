@@ -146,50 +146,16 @@ class OurScene extends Phaser.Scene {
         this.bulletGroup = new BulletGroup(this);
 
     }
-    tankRotation() {
-        let angle = Phaser.Math.RadToDeg(this.tank.rotation) % 360;
-        if (angle < 0) {
-            angle = 180 + (180 + angle);
-        }
-        console.log(angle);
-        let newX, newY; // P1 P2
-        let x = 2 * this.tank_velocity * Math.sin(angle);
-        if (angle > 180) {
-            x = 2 * this.tank_velocity * Math.sin(360 - angle);
+    tankRotation(flag) {
+        let angle = this.tank.rotation;
+        if (flag) {
+            this.tank.x += Math.cos(angle) * this.tank_velocity;
+            this.tank.y += Math.sin(angle) * this.tank_velocity;
         } else {
-            x = 2 * this.tank_velocity * Math.sin(angle);
+            this.tank.x -= Math.cos(angle) * this.tank_velocity;
+            this.tank.y -= Math.sin(angle) * this.tank_velocity;
         }
-        let y = Math.sqrt(Math.abs(this.tank_velocity * this.tank_velocity - (x * x)));
-        if (angle >= 0 && angle < 90) {
-            newY = this.tank.y - x;
-            newX = this.tank.x - y;
-            console.log("cwiartka 1")
-        } else if (angle >= 90 && angle < 180) {
-            newY = this.tank.y - x;
-            newX = this.tank.x + y;
-            console.log("cwiartka 2")
 
-        }
-        else if (angle >= 180 && angle < 270) {
-            newY = this.tank.y + x;
-            newX = this.tank.x + y;
-            console.log("cwiartka 3")
-
-        }
-        else if (angle >= 270 && angle < 360) {
-            newY = this.tank.y + x;
-            newX = this.tank.x - y;
-            console.log("cwiartka 4")
-
-        }
-        // console.log(this.tank.x);
-        // console.log(this.tank.y);
-        // console.log("---------------------------------");
-        // console.log(newX);
-        // console.log(newY);
-
-        this.tank.x = newX;
-        this.tank.y = newY;
     }
     update() {
 
@@ -203,10 +169,10 @@ class OurScene extends Phaser.Scene {
             this.tank.rotation += 0.01;
         }
         if (this.keyW.isDown) {
-            this.tankRotation();
+            this.tankRotation(true);
         }
         if (this.keyS.isDown) {
-            this.tankRotation();
+            this.tankRotation(false);
         }
 
         // Tank - animations
