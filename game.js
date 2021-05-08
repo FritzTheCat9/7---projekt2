@@ -1,5 +1,3 @@
-//Classes
-
 // function sleep(milliseconds) {
 //     const date = Date.now();
 //     let currentDate = null;
@@ -7,6 +5,7 @@
 //         currentDate = Date.now();
 //     } while (currentDate - date < milliseconds);
 // }
+
 class BulletGroup extends Phaser.Physics.Arcade.Group {
     constructor(scene) {
         super(scene.physics.world, scene)
@@ -20,24 +19,24 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
         })
     }
 
-    fireBullet(x, y, velocityX, velocityY) {
+    fireBullet(x, y, velocityX, velocityY, bullet_speed) {
         const bullet = this.getFirstDead(false);
         if (bullet) {
-            bullet.fire(x, y, velocityX, velocityY);
+            bullet.fire(x, y, velocityX, velocityY, bullet_speed);
         }
-
-
     }
 }
 class Bullet extends Phaser.Physics.Arcade.Sprite {
     velocity = 600;
     newVelocity = 0;
     dzielnik = 1;
+
     constructor(scene, x, y) {
         super(scene, x, y, 'bullet0')
     }
 
-    fire(x, y, velocityX, velocityY) {
+    fire(x, y, velocityX, velocityY, bullet_speed) {
+        this.velocity = bullet_speed;
         this.body.reset(x, y);
         this.setActive(true);
         this.setVisible(true);
@@ -47,12 +46,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityX(velocityX / this.dzielnik);
         this.setVelocityY(velocityY / this.dzielnik);
         this.rotation = Phaser.Math.Angle.Between(x, y, game.input.mousePointer.x, game.input.mousePointer.y) + 1.57;
-        // this.rotation = Phaser.Math.Angle.Between(x, y, this.input.mousePointer.x, this.input.mousePointer.y) + 1.57;
-        // console.log(velocityY);
-        // console.log("------------------------");
-    }
-    preUpdate(time, delta) {
-        super.preUpdate(time, delta);
     }
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
@@ -70,12 +63,14 @@ class OurScene extends Phaser.Scene {
         super();
     }
 
+    pointer;
+
     tank;
     tank_velocity = 1;
+    tank_rotation_speed = 0.01;
     turret;
-
-    // bullets;
-    // nextBulletTime = 0;
+    bulletGroup;
+    bullet_speed = 600;
 
     // Keyboard-keys
     keyA;
@@ -97,7 +92,7 @@ class OurScene extends Phaser.Scene {
     create() {
 
         // Cursors
-        // cursors = this.input.keyboard.createCursorKeys();
+        this.pointer = this.input.activePointer;
         this.input.mouse.disableContextMenu();
 
         // Tank
@@ -132,20 +127,10 @@ class OurScene extends Phaser.Scene {
         this.turret.y = 300;
 
         // Bullets
-        /*bullets = game.add.physicsGroup();
-        bullets.createMultiple(30, 'bullet0');
-        bullets.setAll('anchor.y', 0.5);
-        bullets.setAll('outOfBoundsKill', true);
-        bullets.setAll('checkWorldBounds', true);*/
-
-        /*bullet0 = this.physics.add.sprite(16, 64, 'bullet0');
-        bullet1 = this.physics.add.sprite(32, 64, 'bullet1');
-        bullet2 = this.physics.add.sprite(128, 128, 'bullet2');*/
-
-        // Bullets
         this.bulletGroup = new BulletGroup(this);
 
     }
+
     tankRotation(flag) {
         let angle = this.tank.rotation;
         if (flag) {
@@ -155,18 +140,18 @@ class OurScene extends Phaser.Scene {
             this.tank.x -= Math.cos(angle) * this.tank_velocity;
             this.tank.y -= Math.sin(angle) * this.tank_velocity;
         }
-
     }
+
     update() {
 
         // Tank - movement
         this.tank.body.velocity.x = 0;
         this.tank.body.velocity.y = 0;
         if (this.keyA.isDown) {
-            this.tank.rotation -= 0.01;
+            this.tank.rotation -= this.tank_rotation_speed;
         }
         if (this.keyD.isDown) {
-            this.tank.rotation += 0.01;
+            this.tank.rotation += this.tank_rotation_speed;
         }
         if (this.keyW.isDown) {
             this.tankRotation(true);
@@ -186,7 +171,6 @@ class OurScene extends Phaser.Scene {
         this.turret.body.velocity.x = 0;
         this.turret.body.velocity.y = 0;
         this.turret.rotation = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, this.input.mousePointer.x, this.input.mousePointer.y);
-
         if (this.keyW.isDown) {
             this.turret.y = this.tank.y;
             this.turret.x = this.tank.x;
@@ -197,14 +181,20 @@ class OurScene extends Phaser.Scene {
         }
 
         // Bullets
-        if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
+        // if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
+        //     this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
+        //         this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
+        //     );
+        // }
+        if (this.pointer.isDown) {
             this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
-                this.input.mousePointer.x - this.turret.x, this.input.mousePointer.y - this.turret.y,
+                this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
             );
         }
 
     }
 }
+
 var gameWidth = 800;
 var gameHeight = 600;
 var config = {
@@ -222,4 +212,4 @@ var config = {
     scene: OurScene
 };
 
-game = new Phaser.Game(config);
+var game = new Phaser.Game(config);
