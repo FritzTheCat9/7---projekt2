@@ -13,7 +13,7 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
 
         this.createMultiple({
             classType: Bullet,
-            frameQuantity: 10,
+            frameQuantity: 2,
             active: false,
             visible: false,
             key: "bullet0"
@@ -52,7 +52,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
 
-        if (this.y <= 0 || this.y > gameHeight || this.x <= 0 || this.x > gameWidth) {
+        if (this.y <= 0 || this.y > mapHeight || this.x <= 0 || this.x > mapWidth) {
             this.setActive(false);
             this.setVisible(false);
         }
@@ -187,29 +187,29 @@ class OurScene extends Phaser.Scene {
             repeat: -1
         });
 
-        // Enemy Tank
-        this.enemyTank = this.physics.add.sprite(64, 64, 'tank');
-        this.enemyTank.setOrigin(0.5, 0.5);
-        this.enemyTank.x = 500;
-        this.enemyTank.y = 300;
+        // // Enemy Tank
+        // this.enemyTank = this.physics.add.sprite(64, 64, 'tank');
+        // this.enemyTank.setOrigin(0.5, 0.5);
+        // this.enemyTank.x = 500;
+        // this.enemyTank.y = 300;
 
-        // Enemy Tank - animations
-        this.anims.create({
-            key: "anim_enemy_tank_move",
-            frameRate: 10,
-            frames: this.anims.generateFrameNames("enemyTankAtlas", {
-                prefix: "tank",
-                start: 1,
-                end: 6
-            }),
-            repeat: -1
-        });
+        // // Enemy Tank - animations
+        // this.anims.create({
+        //     key: "anim_enemy_tank_move",
+        //     frameRate: 10,
+        //     frames: this.anims.generateFrameNames("enemyTankAtlas", {
+        //         prefix: "tank",
+        //         start: 1,
+        //         end: 6
+        //     }),
+        //     repeat: -1
+        // });
 
-        // Enemy Tank - Turret
-        this.enemyTurret = this.physics.add.sprite(48, 28, "enemyTankAtlas", "turret");
-        this.enemyTurret.setOrigin(0.5, 0.5);
-        this.enemyTurret.x = 500;
-        this.enemyTurret.y = 300;
+        // // Enemy Tank - Turret
+        // this.enemyTurret = this.physics.add.sprite(48, 28, "enemyTankAtlas", "turret");
+        // this.enemyTurret.setOrigin(0.5, 0.5);
+        // this.enemyTurret.x = 500;
+        // this.enemyTurret.y = 300;
 
         // Collisions
         this.tank.setBounce(1, 1);
@@ -217,9 +217,9 @@ class OurScene extends Phaser.Scene {
         //this.physics.add.collider(this.tank, this.enemyTank);
         //this.physics.add.collider(this.bulletGroup, this.enemyTank);
 
-        // Sound
-        this.blasterSound = this.sound.add("blasterSound");
-        this.explosionSound = this.sound.add("explosionSound");
+        // // Sound
+        // this.blasterSound = this.sound.add("blasterSound");
+        // this.explosionSound = this.sound.add("explosionSound");
 
         // Camera
         this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
@@ -228,78 +228,78 @@ class OurScene extends Phaser.Scene {
         this.cameras.main.startFollow(this.tank);
     }
 
-    tankRotation(flag) {
-        let angle = this.tank.rotation;
-        if (flag) {
-            this.tank.x += Math.cos(angle) * this.tank_velocity;
-            this.tank.y += Math.sin(angle) * this.tank_velocity;
-        } else {
-            this.tank.x -= Math.cos(angle) * this.tank_velocity;
-            this.tank.y -= Math.sin(angle) * this.tank_velocity;
-        }
-    }
+    // tankRotation(flag) {
+    //     let angle = this.tank.rotation;
+    //     if (flag) {
+    //         this.tank.x += Math.cos(angle) * this.tank_velocity;
+    //         this.tank.y += Math.sin(angle) * this.tank_velocity;
+    //     } else {
+    //         this.tank.x -= Math.cos(angle) * this.tank_velocity;
+    //         this.tank.y -= Math.sin(angle) * this.tank_velocity;
+    //     }
+    // }
 
     update() {
         // Tank - movement
-        this.tank.body.velocity.x = 0;
-        this.tank.body.velocity.y = 0;
-        if (this.keyA.isDown) {
-            this.tank.rotation -= this.tank_rotation_speed;
-        }
-        if (this.keyD.isDown) {
-            this.tank.rotation += this.tank_rotation_speed;
-        }
-        if (this.keyW.isDown) {
-            this.tankRotation(true);
-        }
-        if (this.keyS.isDown) {
-            this.tankRotation(false);
-        }
+        // this.tank.body.velocity.x = 0;
+        // this.tank.body.velocity.y = 0;
+        // if (this.keyA.isDown) {
+        //     this.tank.rotation -= this.tank_rotation_speed;
+        // }
+        // if (this.keyD.isDown) {
+        //     this.tank.rotation += this.tank_rotation_speed;
+        // }
+        // if (this.keyW.isDown) {
+        //     this.tankRotation(true);
+        // }
+        // if (this.keyS.isDown) {
+        //     this.tankRotation(false);
+        // }
 
-        // Tank - animations
-        if (this.keyA.isDown || this.keyD.isDown || this.keyW.isDown || this.keyS.isDown) {
-            this.tank.anims.play('anim_tank_move', true);
-        } else {
-            this.tank.anims.play('anim_tank_move', false);
-        }
+        // // Tank - animations
+        // if (this.keyA.isDown || this.keyD.isDown || this.keyW.isDown || this.keyS.isDown) {
+        //     this.tank.anims.play('anim_tank_move', true);
+        // } else {
+        //     this.tank.anims.play('anim_tank_move', false);
+        // }
 
-        // Turret - movement
-        this.turret.body.velocity.x = 0;
-        this.turret.body.velocity.y = 0;
-        this.turret.rotation = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, this.input.mousePointer.x, this.input.mousePointer.y);
-        if (this.keyW.isDown) {
-            this.turret.y = this.tank.y;
-            this.turret.x = this.tank.x;
-        }
-        if (this.keyS.isDown) {
-            this.turret.y = this.tank.y;
-            this.turret.x = this.tank.x;
-        }
+        // // Turret - movement
+        // this.turret.body.velocity.x = 0;
+        // this.turret.body.velocity.y = 0;
+        // this.turret.rotation = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, this.input.mousePointer.x, this.input.mousePointer.y);
+        // if (this.keyW.isDown) {
+        //     this.turret.y = this.tank.y;
+        //     this.turret.x = this.tank.x;
+        // }
+        // if (this.keyS.isDown) {
+        //     this.turret.y = this.tank.y;
+        //     this.turret.x = this.tank.x;
+        // }
 
-        // Bullets
-        if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
-            this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
-                this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
-            );
-            this.blasterSound.play();
-        }
-        // if (this.pointer.isDown) {
+        // // Bullets
+        // if (Phaser.Input.pointer.JustDown(this.spaceBar)) {
         //     this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
         //         this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
         //     );
+        //     this.blasterSound.play();
         // }
+        // // if (this.pointer.isDown) {
+        // //     this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
+        // //         this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
+        // //     );
+        // // } 
 
-        // Text
-        this.updateText();
+        // // Text
+        // this.updateText();
 
-        // Explosion
-        this.explosion.anims.play("anim_tank_destroyed", true);
+        // // Explosion
+        // this.explosion.anims.play("anim_tank_destroyed", true);
 
-        // Diamond
-        this.diamond.anims.play("anim_diamond", true);
+        // // Diamond
+        // this.diamond.anims.play("anim_diamond", true);
 
-        // Enemy Tank
-        this.enemyTank.anims.play('anim_enemy_tank_move', true);
+        // // Enemy Tank
+        // this.enemyTank.anims.play('anim_enemy_tank_move', true);
 
         // Collisions
         this.physics.collide(this.diamond, this.tank, this.collectDiamond);
