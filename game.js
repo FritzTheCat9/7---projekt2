@@ -79,8 +79,8 @@ class OurScene extends Phaser.Scene {
     pointer;
 
     tank;
-    tank_velocity = 1;
-    tank_rotation_speed = 0.01;
+    tank_velocity = 5;
+    tank_rotation_speed = 0.05;
     tank_HP = 50;
 
     turret;
@@ -119,9 +119,15 @@ class OurScene extends Phaser.Scene {
 
         this.load.audio('blasterSound', '/assets/audio/SoundEffects/blaster.mp3');
         this.load.audio('explosionSound', '/assets/audio/SoundEffects/explosion.mp3');      // this.explosionSound.play();
+
+        this.load.image('background', '/assets/games/starstruck/background.png')
+
     }
 
     create() {
+        // Background
+        let back = this.add.tileSprite(0, 0, 1600, 1200, 'background');
+        back.setOrigin(0)
 
         // Cursors
         this.pointer = this.input.activePointer;
@@ -207,6 +213,13 @@ class OurScene extends Phaser.Scene {
         // Sound
         this.blasterSound = this.sound.add("blasterSound");
         this.explosionSound = this.sound.add("explosionSound");
+
+        // Camera
+        this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
+        this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
+
+        this.tank.body.setCollideWorldBounds(true);
+        this.cameras.main.startFollow(this.tank);
     }
 
     tankRotation(flag) {
@@ -308,6 +321,8 @@ class OurScene extends Phaser.Scene {
 
 var gameWidth = 800;
 var gameHeight = 600;
+var mapWidth = 1600;
+var mapHeight = 1200;
 var config = {
     type: Phaser.AUTO,
     width: gameWidth,
