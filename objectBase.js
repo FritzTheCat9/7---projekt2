@@ -297,7 +297,7 @@ class OurScene extends Phaser.Scene {
         this.text.setScrollFactor(0);
 
         // Explosion
-        this.explosion = this.physics.add.sprite(-200, -300, 'explosion');
+        this.explosion = this.physics.add.sprite(-200, -200, 'explosion');
         this.anims.create({
             key: "anim_tank_destroyed",
             frameRate: 10,
@@ -377,9 +377,6 @@ class OurScene extends Phaser.Scene {
         // Text
         this.updateText();
 
-        // Explosion
-        // this.explosion.anims.play("anim_tank_destroyed", true);
-
         // Diamond
         this.diamond.anims.play("anim_diamond", true);
 
@@ -405,7 +402,6 @@ class OurScene extends Phaser.Scene {
     disableObject(object) {
         object.disable();
         this.money += 50;
-
     }
     collectDiamond(diamond) {
         diamond.disableBody(true, true);
