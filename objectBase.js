@@ -20,10 +20,10 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
         })
     }
 
-    fireBullet(x, y, velocityX, velocityY) {
+    fireBullet(x, y, velocityX, velocityY, bullet_speed) {
         const bullet = this.getFirstDead(false);
         if (bullet) {
-            bullet.fire(x, y, velocityX, velocityY);
+            bullet.fire(x, y, velocityX, velocityY, bullet_speed);
             this.scene.blasterSound.play();
         }
 
@@ -31,14 +31,16 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
     }
 }
 class Bullet extends Phaser.Physics.Arcade.Sprite {
-    velocity = 600;
+    velocity = 600; // bullet_speed
     newVelocity = 0;
     dzielnik = 1;
     constructor(scene, x, y) {
         super(scene, x, y, 'bullet0')
     }
 
-    fire(x, y, velocityX, velocityY) {
+    fire(x, y, velocityX, velocityY, bullet_speed) {
+        this.velocity = bullet_speed;
+
         this.body.reset(x, y);
         this.setActive(true);
         this.setVisible(true);
@@ -148,6 +150,8 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
 }
 
 class Turret extends Phaser.Physics.Arcade.Sprite {
+    bullet_speed = 600;
+
     constructor(scene, x, y, turret, tankAtlas) {
         super(scene, x, y, turret)
         this.scene = scene;
@@ -172,10 +176,12 @@ class Turret extends Phaser.Physics.Arcade.Sprite {
         this.turret.rotation = Phaser.Math.Angle.Between(this.turret.x, this.turret.y, this.scene.input.mousePointer.x + camera.scrollX, this.scene.input.mousePointer.y + camera.scrollY);
 
     }
-
+    changeBulletSpeed(newBulletSpeed) {
+        this.bullet_speed = newBulletSpeed;
+    }
     fire(mouseX, mouseY) {
         var camera = this.scene.cameras.main;
-        this.bulletGroup.fireBullet(this.turret.x, this.turret.y, mouseX + camera.scrollX - this.turret.x, mouseY + camera.scrollY - this.turret.y);
+        this.bulletGroup.fireBullet(this.turret.x, this.turret.y, mouseX + camera.scrollX - this.turret.x, mouseY + camera.scrollY - this.turret.y, this.bullet_speed);
     }
 }
 class AI {
@@ -201,32 +207,32 @@ class OurScene extends Phaser.Scene {
     // Player
     player;
 
-    //Enemy
+    // Enemy
     enemies;
 
-    //Text
+    // Text
     text;
 
-
-    pointer;
+    // Statystyki - wyświetlone na ekranie
     tank_HP = 50;
-
-    bullet_speed = 600;
-
     money = 0;
     level = 1;
-    text;
 
+    // Myszka
+    pointer;
+
+    // Animations
     explosion;
 
+    // PowerUps
     diamond;
 
-    enemyTank;
-
+    // Sounds
     blasterSound;
     explosionSound;
     powerupSound;
 
+    // Background
     background;
 
     preload() {
@@ -273,6 +279,7 @@ class OurScene extends Phaser.Scene {
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
         this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
+        //this.player.turret.changeBulletSpeed(30);
 
         // Sound
         this.blasterSound = this.sound.add("blasterSound");
