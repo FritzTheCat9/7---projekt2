@@ -99,6 +99,8 @@ class OurScene extends Phaser.Scene {
     blasterSound;
     explosionSound;
 
+    background;
+
     // Keyboard-keys
     keyA;
     keyS;
@@ -125,12 +127,13 @@ class OurScene extends Phaser.Scene {
         this.load.image('darkGrass', '/assets/games/tanks/dark_grass.png');
         this.load.image('lightSand', '/assets/games/tanks/light_sand.png');
         this.load.image('sand', '/assets/games/tanks/sand.png');
+        this.load.image('scorched_earth', '/assets/games/tanks/scorched_earth.png');
     }
 
     create() {
         // Background
-        let back = this.add.tileSprite(0, 0, mapWidth, mapHeight, 'lightSand');
-        back.setOrigin(0)
+        this.background = this.add.tileSprite(0, 0, mapWidth, mapHeight, 'lightSand');
+        this.background.setOrigin(0)
 
         // Cursors
         this.pointer = this.input.activePointer;
@@ -172,6 +175,7 @@ class OurScene extends Phaser.Scene {
 
         // Scene data
         this.text = this.add.text(10, 10, '', { font: '32px Arial', fill: '#00ff00' });
+        this.text.setScrollFactor(0);
 
         // Explosion
         this.explosion = this.physics.add.sprite(200, 300, 'explosion');
@@ -209,7 +213,6 @@ class OurScene extends Phaser.Scene {
         // Collisions
         this.tank.setBounce(1, 1);
         this.enemyTank.setBounce(1, 1);
-
         //this.physics.add.collider(this.tank, this.enemyTank);
         //this.physics.add.collider(this.bulletGroup, this.enemyTank);
 
@@ -220,7 +223,6 @@ class OurScene extends Phaser.Scene {
         // Camera
         this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
         this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
-
         this.tank.body.setCollideWorldBounds(true);
         this.cameras.main.startFollow(this.tank);
     }
@@ -319,6 +321,10 @@ class OurScene extends Phaser.Scene {
             'Money: ' + this.data.get('Money'),
             'Level: ' + this.data.get('Level')
         ]);
+    }
+
+    render() {
+        game.debug.cameraInfo(game.camera, 32, 32);
     }
 }
 
