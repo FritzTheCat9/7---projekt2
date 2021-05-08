@@ -94,6 +94,8 @@ class OurScene extends Phaser.Scene {
 
     explosion;
 
+    enemyTank;
+
     // Keyboard-keys
     keyA;
     keyS;
@@ -165,7 +167,7 @@ class OurScene extends Phaser.Scene {
         this.anims.create({
             key: "anim_tank_destroyed",
             frameRate: 10,
-            frames: this.anims.generateFrameNumbers("explosion", { start: 0, end: 16 }),
+            frames: this.anims.generateFrameNumbers("explosion"),
             repeat: -1
         });
 
@@ -186,6 +188,19 @@ class OurScene extends Phaser.Scene {
             }),
             repeat: -1
         });
+
+        // Enemy Tank - Turret
+        this.enemyTurret = this.physics.add.sprite(48, 28, "enemyTankAtlas", "turret");
+        this.enemyTurret.setOrigin(0.5, 0.5);
+        this.enemyTurret.x = 500;
+        this.enemyTurret.y = 500;
+
+        // Collisions
+        // //this.physics.add.collider(this.tank, this.enemyTank, console.log("asd"));
+        // this.game.physics.enable(this.tank, Phaser.Physics.ARCADE);
+        // this.game.physics.enable(this.enemyTank, Phaser.Physics.ARCADE);
+        this.tank.body.bounce.setTo(1, 1);
+        this.enemyTank.body.bounce.setTo(1, 1);
     }
 
     tankRotation(flag) {
@@ -256,6 +271,11 @@ class OurScene extends Phaser.Scene {
 
         // Enemy Tank
         this.enemyTank.anims.play('anim_enemy_tank_move', true);
+
+        // Collisions
+        //this.physics.overlap(this.tank, this.enemyTank, console.log("asd"));
+        this.physics.collide(this.tank, this.enemyTank);
+        this.physics.collide(this.tank, this.enemyTank);
     }
 
     updateText() {
