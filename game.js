@@ -120,13 +120,16 @@ class OurScene extends Phaser.Scene {
         this.load.audio('blasterSound', '/assets/audio/SoundEffects/blaster.mp3');
         this.load.audio('explosionSound', '/assets/audio/SoundEffects/explosion.mp3');      // this.explosionSound.play();
 
-        this.load.image('background', '/assets/games/starstruck/background.png')
-
+        // Backgrounds
+        this.load.image('lightGrass', '/assets/games/tanks/light_grass.png');
+        this.load.image('darkGrass', '/assets/games/tanks/dark_grass.png');
+        this.load.image('lightSand', '/assets/games/tanks/light_sand.png');
+        this.load.image('sand', '/assets/games/tanks/sand.png');
     }
 
     create() {
         // Background
-        let back = this.add.tileSprite(0, 0, 1600, 1200, 'background');
+        let back = this.add.tileSprite(0, 0, mapWidth, mapHeight, 'lightSand');
         back.setOrigin(0)
 
         // Cursors
