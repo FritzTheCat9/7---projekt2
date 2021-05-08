@@ -82,6 +82,8 @@ class OurScene extends Phaser.Scene {
 
     explosion;
 
+    diamond;
+
     enemyTank;
 
     blasterSound;
@@ -300,14 +302,16 @@ class OurScene extends Phaser.Scene {
         this.enemyTank.anims.play('anim_enemy_tank_move', true);
 
         // Collisions
-        //this.physics.add.collider(this.tank, this.enemyTank);
+        this.physics.collide(this.diamond, this.tank, this.collectDiamond);
         //this.physics.add.overlap(this.tank, this.enemyTank, this.collectStar, null, this);
         //this.physics.collide(this.bulletGroup, this.enemyTank, this.killEnemyTank);
     }
 
-    // collectStar(player, star) {
-    //     star.disableBody(true, true); // do zbierania bonusów
-    // }
+    collectDiamond(diamond) {
+        diamond.disableBody(true, true);
+        //this.money += 50;
+        //this.updateText();
+    }
 
     // killEnemyTank() {
     //     this.enemyTank.disableBody(true, true);
@@ -323,10 +327,6 @@ class OurScene extends Phaser.Scene {
             'Money: ' + this.data.get('Money'),
             'Level: ' + this.data.get('Level')
         ]);
-    }
-
-    render() {
-        game.debug.cameraInfo(game.camera, 32, 32);
     }
 }
 
