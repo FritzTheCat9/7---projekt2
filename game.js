@@ -59,6 +59,18 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     }
 }
 
+/*class EnemyTank extends Phaser.Physics.Arcade.Sprite {
+
+    constructor(scene, x, y) {
+        super(scene, x, y, 'tank')
+    }
+
+    preUpdate(time, delta) {
+        super.preUpdate(time, delta);
+
+    }
+}*/
+
 class OurScene extends Phaser.Scene {
     constructor() {
         super();
@@ -80,6 +92,8 @@ class OurScene extends Phaser.Scene {
     level = 1;
     text;
 
+    explosion;
+
     // Keyboard-keys
     keyA;
     keyS;
@@ -95,6 +109,11 @@ class OurScene extends Phaser.Scene {
         this.load.image('bullet0', 'assets/misc/bullet0.png');
         this.load.image('bullet1', 'assets/misc/bullet1.png');
         this.load.image('bullet2', 'assets/misc/bullet2.png');
+        this.load.spritesheet('explosion',
+            'assets/games/invaders/explode.png', {
+            frameWidth: 128,
+            frameHeight: 128,
+        })
     }
 
     create() {
@@ -139,6 +158,15 @@ class OurScene extends Phaser.Scene {
 
         // Scene data
         this.text = this.add.text(10, 10, '', { font: '32px Arial', fill: '#00ff00' });
+
+        // Explosion
+        this.explosion = this.physics.add.sprite(200, 300, 'explosion');
+        this.anims.create({
+            key: "anim_tank_destroyed",
+            frameRate: 10,
+            frames: this.anims.generateFrameNumbers("explosion", { start: 0, end: 16 }),
+            repeat: -1
+        });
     }
 
     tankRotation(flag) {
@@ -202,8 +230,10 @@ class OurScene extends Phaser.Scene {
         // }
 
         // Text
-        this.tank_HP++;
         this.updateText();
+
+        // Explosion
+        this.explosion.anims.play("anim_tank_destroyed", true);
     }
 
     updateText() {
