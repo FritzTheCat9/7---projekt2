@@ -96,6 +96,8 @@ class OurScene extends Phaser.Scene {
 
     enemyTank;
 
+    blasterSound;
+
     // Keyboard-keys
     keyA;
     keyS;
@@ -112,11 +114,9 @@ class OurScene extends Phaser.Scene {
         this.load.image('bullet0', 'assets/misc/bullet0.png');
         this.load.image('bullet1', 'assets/misc/bullet1.png');
         this.load.image('bullet2', 'assets/misc/bullet2.png');
-        this.load.spritesheet('explosion',
-            'assets/games/invaders/explode.png', {
-            frameWidth: 128,
-            frameHeight: 128,
-        })
+        this.load.spritesheet('explosion', 'assets/games/invaders/explode.png', { frameWidth: 128, frameHeight: 128 })
+
+        this.load.audio('blaster', '/assets/audio/SoundEffects/blaster.mp3');
     }
 
     create() {
@@ -201,6 +201,9 @@ class OurScene extends Phaser.Scene {
 
         //this.physics.add.collider(this.tank, this.enemyTank);
         //this.physics.add.collider(this.bulletGroup, this.enemyTank);
+
+        // Sound
+        this.blasterSound = this.sound.add("blaster")
     }
 
     tankRotation(flag) {
@@ -256,6 +259,7 @@ class OurScene extends Phaser.Scene {
             this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
                 this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
             );
+            this.blasterSound.play();
         }
         // if (this.pointer.isDown) {
         //     this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
