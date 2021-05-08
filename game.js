@@ -7,6 +7,7 @@
 // }
 
 class BulletGroup extends Phaser.Physics.Arcade.Group {
+
     constructor(scene) {
         super(scene.physics.world, scene)
 
@@ -26,6 +27,7 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
         }
     }
 }
+
 class Bullet extends Phaser.Physics.Arcade.Sprite {
     velocity = 600;
     newVelocity = 0;
@@ -54,7 +56,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
             this.setActive(false);
             this.setVisible(false);
         }
-
     }
 }
 
@@ -68,9 +69,15 @@ class OurScene extends Phaser.Scene {
     tank;
     tank_velocity = 1;
     tank_rotation_speed = 0.01;
+    tank_HP = 50;
+
     turret;
+
     bulletGroup;
     bullet_speed = 600;
+
+    money = 0;
+    level = 1;
 
     // Keyboard-keys
     keyA;
@@ -129,6 +136,16 @@ class OurScene extends Phaser.Scene {
         // Bullets
         this.bulletGroup = new BulletGroup(this);
 
+        // Scene data
+        this.data.set('HP', this.tank_HP);
+        this.data.set('Money', this.money);
+        this.data.set('Level', this.level);
+        var text = this.add.text(10, 10, '', { font: '32px Arial', fill: '#00ff00' });
+        text.setText([
+            'HP: ' + this.data.get('HP'),
+            'Money: ' + this.data.get('Money'),
+            'Level: ' + this.data.get('Level')
+        ]);
     }
 
     tankRotation(flag) {
@@ -181,16 +198,16 @@ class OurScene extends Phaser.Scene {
         }
 
         // Bullets
-        // if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
-        //     this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
-        //         this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
-        //     );
-        // }
-        if (this.pointer.isDown) {
+        if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
             this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
                 this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
             );
         }
+        // if (this.pointer.isDown) {
+        //     this.bulletGroup.fireBullet(this.turret.x, this.turret.y,
+        //         this.pointer.x - this.turret.x, this.pointer.y - this.turret.y, this.bullet_speed
+        //     );
+        // }
 
     }
 }
