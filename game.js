@@ -175,7 +175,7 @@ class OurScene extends Phaser.Scene {
         this.enemyTank = this.physics.add.sprite(64, 64, 'tank');
         this.enemyTank.setOrigin(0.5, 0.5);
         this.enemyTank.x = 500;
-        this.enemyTank.y = 500;
+        this.enemyTank.y = 300;
 
         // Enemy Tank - animations
         this.anims.create({
@@ -193,14 +193,14 @@ class OurScene extends Phaser.Scene {
         this.enemyTurret = this.physics.add.sprite(48, 28, "enemyTankAtlas", "turret");
         this.enemyTurret.setOrigin(0.5, 0.5);
         this.enemyTurret.x = 500;
-        this.enemyTurret.y = 500;
+        this.enemyTurret.y = 300;
 
         // Collisions
-        // //this.physics.add.collider(this.tank, this.enemyTank, console.log("asd"));
-        // this.game.physics.enable(this.tank, Phaser.Physics.ARCADE);
-        // this.game.physics.enable(this.enemyTank, Phaser.Physics.ARCADE);
-        this.tank.body.bounce.setTo(1, 1);
-        this.enemyTank.body.bounce.setTo(1, 1);
+        this.tank.setBounce(1, 1);
+        this.enemyTank.setBounce(1, 1);
+
+        //this.physics.add.collider(this.tank, this.enemyTank);
+        //this.physics.add.collider(this.bulletGroup, this.enemyTank);
     }
 
     tankRotation(flag) {
@@ -273,10 +273,18 @@ class OurScene extends Phaser.Scene {
         this.enemyTank.anims.play('anim_enemy_tank_move', true);
 
         // Collisions
-        //this.physics.overlap(this.tank, this.enemyTank, console.log("asd"));
-        this.physics.collide(this.tank, this.enemyTank);
-        this.physics.collide(this.tank, this.enemyTank);
+        //this.physics.add.collider(this.tank, this.enemyTank);
+        //this.physics.add.overlap(this.tank, this.enemyTank, this.collectStar, null, this);
+        //this.physics.collide(this.bulletGroup, this.enemyTank, this.killEnemyTank);
     }
+
+    // collectStar(player, star) {
+    //     star.disableBody(true, true); // do zbierania bonusów
+    // }
+
+    // killEnemyTank() {
+    //     this.enemyTank.disableBody(true, true);
+    // }
 
     updateText() {
         this.data.set('HP', this.tank_HP);
