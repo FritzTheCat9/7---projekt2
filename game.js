@@ -78,6 +78,7 @@ class OurScene extends Phaser.Scene {
 
     money = 0;
     level = 1;
+    text;
 
     // Keyboard-keys
     keyA;
@@ -137,15 +138,7 @@ class OurScene extends Phaser.Scene {
         this.bulletGroup = new BulletGroup(this);
 
         // Scene data
-        this.data.set('HP', this.tank_HP);
-        this.data.set('Money', this.money);
-        this.data.set('Level', this.level);
-        var text = this.add.text(10, 10, '', { font: '32px Arial', fill: '#00ff00' });
-        text.setText([
-            'HP: ' + this.data.get('HP'),
-            'Money: ' + this.data.get('Money'),
-            'Level: ' + this.data.get('Level')
-        ]);
+        this.text = this.add.text(10, 10, '', { font: '32px Arial', fill: '#00ff00' });
     }
 
     tankRotation(flag) {
@@ -160,7 +153,6 @@ class OurScene extends Phaser.Scene {
     }
 
     update() {
-
         // Tank - movement
         this.tank.body.velocity.x = 0;
         this.tank.body.velocity.y = 0;
@@ -209,6 +201,21 @@ class OurScene extends Phaser.Scene {
         //     );
         // }
 
+        // Text
+        this.tank_HP++;
+        this.updateText();
+    }
+
+    updateText() {
+        this.data.set('HP', this.tank_HP);
+        this.data.set('Money', this.money);
+        this.data.set('Level', this.level);
+
+        this.text.setText([
+            'HP: ' + this.data.get('HP'),
+            'Money: ' + this.data.get('Money'),
+            'Level: ' + this.data.get('Level')
+        ]);
     }
 }
 
