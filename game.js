@@ -105,6 +105,7 @@ class OurScene extends Phaser.Scene {
 
         this.load.image('tank', 'assets/games/tanks/tank1.png');
         this.load.atlas('tankAtlas', 'assets/games/tanks/tanks.png', 'assets/games/tanks/tanks.json');
+        this.load.atlas('enemyTankAtlas', 'assets/games/tanks/enemy-tanks.png', 'assets/games/tanks/tanks.json');
 
         this.load.image('bullet0', 'assets/misc/bullet0.png');
         this.load.image('bullet1', 'assets/misc/bullet1.png');
@@ -165,6 +166,24 @@ class OurScene extends Phaser.Scene {
             key: "anim_tank_destroyed",
             frameRate: 10,
             frames: this.anims.generateFrameNumbers("explosion", { start: 0, end: 16 }),
+            repeat: -1
+        });
+
+        // Enemy Tank
+        this.enemyTank = this.physics.add.sprite(64, 64, 'tank');
+        this.enemyTank.setOrigin(0.5, 0.5);
+        this.enemyTank.x = 500;
+        this.enemyTank.y = 500;
+
+        // Enemy Tank - animations
+        this.anims.create({
+            key: "anim_enemy_tank_move",
+            frameRate: 10,
+            frames: this.anims.generateFrameNames("enemyTankAtlas", {
+                prefix: "tank",
+                start: 1,
+                end: 6
+            }),
             repeat: -1
         });
     }
@@ -234,6 +253,9 @@ class OurScene extends Phaser.Scene {
 
         // Explosion
         this.explosion.anims.play("anim_tank_destroyed", true);
+
+        // Enemy Tank
+        this.enemyTank.anims.play('anim_enemy_tank_move', true);
     }
 
     updateText() {
