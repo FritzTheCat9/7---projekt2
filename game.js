@@ -59,18 +59,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     }
 }
 
-/*class EnemyTank extends Phaser.Physics.Arcade.Sprite {
-
-    constructor(scene, x, y) {
-        super(scene, x, y, 'tank')
-    }
-
-    preUpdate(time, delta) {
-        super.preUpdate(time, delta);
-
-    }
-}*/
-
 class OurScene extends Phaser.Scene {
     constructor() {
         super();
@@ -113,12 +101,14 @@ class OurScene extends Phaser.Scene {
         this.load.image('tank', 'assets/games/tanks/tank1.png');
         this.load.atlas('tankAtlas', 'assets/games/tanks/tanks.png', 'assets/games/tanks/tanks.json');
         this.load.atlas('enemyTankAtlas', 'assets/games/tanks/enemy-tanks.png', 'assets/games/tanks/tanks.json');
-
+        this.load.spritesheet('explosion', 'assets/games/invaders/explode.png', { frameWidth: 128, frameHeight: 128 })
+        this.load.spritesheet('diamond', 'assets/particlestorm/sprites/diamonds32x5.png', { frameWidth: 64, frameHeight: 64 })
         this.load.image('bullet0', 'assets/misc/bullet0.png');
+
         this.load.image('bullet1', 'assets/misc/bullet1.png');
         this.load.image('bullet2', 'assets/misc/bullet2.png');
-        this.load.spritesheet('explosion', 'assets/games/invaders/explode.png', { frameWidth: 128, frameHeight: 128 })
 
+        // Sounds
         this.load.audio('blasterSound', '/assets/audio/SoundEffects/blaster.mp3');
         this.load.audio('explosionSound', '/assets/audio/SoundEffects/explosion.mp3');      // this.explosionSound.play();
 
@@ -183,6 +173,15 @@ class OurScene extends Phaser.Scene {
             key: "anim_tank_destroyed",
             frameRate: 10,
             frames: this.anims.generateFrameNumbers("explosion"),
+            repeat: -1
+        });
+
+        // Explosion
+        this.diamond = this.physics.add.sprite(200, 100, 'diamond');
+        this.anims.create({
+            key: "anim_diamond",
+            frameRate: 2,
+            frames: this.anims.generateFrameNumbers("diamond"),
             repeat: -1
         });
 
@@ -293,6 +292,9 @@ class OurScene extends Phaser.Scene {
 
         // Explosion
         this.explosion.anims.play("anim_tank_destroyed", true);
+
+        // Diamond
+        this.diamond.anims.play("anim_diamond", true);
 
         // Enemy Tank
         this.enemyTank.anims.play('anim_enemy_tank_move', true);
