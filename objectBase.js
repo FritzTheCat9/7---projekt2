@@ -76,6 +76,7 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
     tank_velocity = 5;
     tank_rotation_speed = 0.05;
     move_animation = 'anim_tank_move';
+    tank_HP = 50;
 
     constructor(scene, x, y, turret, tank, anim_tank_move, tankAtlas) {
         super(scene, x, y, tank)
@@ -192,6 +193,60 @@ class AI {
         this.object.tankRotation(Math.round(Math.random()));
     }
 }
+
+class Diamond extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+        super(scene, x, y)
+        // Diamond
+        this.diamond = scene.physics.add.sprite(200, 100, 'diamond');
+        this.diamond.setOrigin(0.5, 0.5);
+        this.diamond.x = x;
+        this.diamond.y = y;
+    }
+    canCollide() {
+        this.scene.physics.collide(this.diamond, this.scene.player.tank, () => this.collectDiamond());
+    }
+    collectDiamond() {
+        this.diamond.disableBody(true, true);
+        this.diamond.setActive(false);
+        this.diamond.setVisible(false);
+        this.scene.powerupSound.play();
+        console.log(this)
+        this.scene.player.tank_HP = 50;
+    }
+    animation(flag) {
+        if (flag) {
+            this.diamond.anims.play("anim_diamond", true);
+        } else {
+            this.diamond.anims.play("anim_diamond", false);
+        }
+    }
+}
+
+/*class Diamonds extends Phaser.Physics.Arcade.Group {
+    constructor(scene) {
+        super(scene.physics.world, scene)
+        this.scene = scene;
+        this.createMultiple({
+            classType: Bullet,
+            frameQuantity: 10,
+            active: false,
+            visible: false,
+            key: "bullet0"
+        })
+    }
+
+    fireBullet(x, y, velocityX, velocityY, bullet_speed) {
+        const bullet = this.getFirstDead(false);
+        if (bullet) {
+            bullet.fire(x, y, velocityX, velocityY, bullet_speed);
+            this.scene.blasterSound.play();
+        }
+
+
+    }
+}*/
+
 class OurScene extends Phaser.Scene {
     constructor() {
         super();
@@ -214,7 +269,7 @@ class OurScene extends Phaser.Scene {
     text;
 
     // Statystyki - wyświetlone na ekranie
-    tank_HP = 50;
+    //tank_HP = 50;
     money = 0;
     level = 1;
 
@@ -279,6 +334,7 @@ class OurScene extends Phaser.Scene {
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
         this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
+        this.diamond123 = new Diamond(this, 400, 500);
         //this.player.turret.changeBulletSpeed(30);
 
         // Sound
@@ -306,7 +362,7 @@ class OurScene extends Phaser.Scene {
         });
 
         // Diamond
-        this.diamond = this.physics.add.sprite(200, 100, 'diamond');
+        //this.diamond = this.physics.add.sprite(200, 100, 'diamond');
         this.anims.create({
             key: "anim_diamond",
             frameRate: 2,
@@ -378,10 +434,13 @@ class OurScene extends Phaser.Scene {
         this.updateText();
 
         // Diamond
-        this.diamond.anims.play("anim_diamond", true);
+        //this.diamond.anims.play("anim_diamond", true);
+        this.diamond123.animation(true);
+        //this.diamond123.collectDiamond(this.tank);
 
         // Collisions
-        this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
+        this.diamond123.canCollide()
+        //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
         this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies));
         // // this.physics.collide(this.enemies.tank, this.player.tank);
         // this.player.tank.setBounce(0.2);
@@ -403,13 +462,13 @@ class OurScene extends Phaser.Scene {
         object.disable();
         this.money += 50;
     }
-    collectDiamond(diamond) {
+    /*collectDiamond(diamond) {
         diamond.disableBody(true, true);
         this.tank_HP = 50;
         this.powerupSound.play();
-    }
+    }*/
     updateText() {
-        this.data.set('HP', this.tank_HP);
+        this.data.set('HP', this.player.tank_HP);
         this.data.set('Money', this.money);
         this.data.set('Level', this.level);
 
