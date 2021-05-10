@@ -431,6 +431,10 @@ class OurScene extends Phaser.Scene {
         //this.diamond.anims.play("anim_diamond", true);
         this.diamond123.animation(true);
         this.diamond123.canCollide();
+        for (let i = 0; i < 10; i++) {
+            this.diamonds[i].animation(true);
+            this.diamonds[i].canCollide();
+        }
 
         // Collisions
         //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
