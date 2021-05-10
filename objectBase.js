@@ -204,7 +204,6 @@ class Diamond extends Phaser.Physics.Arcade.Sprite {
         this.diamond.x = x;
         this.diamond.y = y;
     }
-
     canCollide() {
         this.scene.physics.collide(this.diamond, this.scene.player.tank, () => this.collectDiamond());
     }
@@ -378,14 +377,17 @@ class OurScene extends Phaser.Scene {
     spawnDiamonds(scene, quantity) {
         scene.diamonds = new Array(quantity);
         for (let i = 0; i < quantity; i++) {
-            const diamond = new Diamond(this, 400 + (i * 100), 500);
+            let x = Phaser.Math.Between(0, 1600);
+            let y = Phaser.Math.Between(0, 1200);
+            //const diamond = new Diamond(this, 400 + (i * 100), 500);
+            const diamond = new Diamond(this, x, y);
             scene.diamonds[i] = diamond;
         }
-        for (let i = 0; i < quantity; i++) {
+        /*for (let i = 0; i < quantity; i++) {
             scene.diamonds[i].animation(true);
             scene.diamonds[i].canCollide();
-        }
-        console.log(scene.diamonds)
+        }*/
+        console.log(scene.diamonds);
     }
 
     update() {
