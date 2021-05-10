@@ -20,14 +20,20 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
         })
     }
 
+    nextShotTime = 1000;
+    shotDelay = 1000;
+
     fireBullet(x, y, velocityX, velocityY, bullet_speed) {
         const bullet = this.getFirstDead(false);
-        if (bullet) {
-            bullet.fire(x, y, velocityX, velocityY, bullet_speed);
-            this.scene.blasterSound.play();
+
+        if (this.nextShotTime < this.scene.time.now) {
+            this.nextShotTime = this.scene.time.now + this.shotDelay;
+
+            if (bullet) {
+                bullet.fire(x, y, velocityX, velocityY, bullet_speed);
+                this.scene.blasterSound.play();
+            }
         }
-
-
     }
 }
 class Bullet extends Phaser.Physics.Arcade.Sprite {
@@ -123,6 +129,9 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         this.scene.explosionSound.play();
 
         this.follow_flag = false;
+    }
+    hit() {
+        this.tank_HP -= 5;
     }
     rotate(flag) {
         if (flag) {
