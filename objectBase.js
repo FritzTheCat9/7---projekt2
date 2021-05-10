@@ -148,6 +148,36 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
             this.tank.anims.play(this.move_animation, false);
         }
     }
+    followPlayer() {
+        // target or player's x, y
+        const tx = this.scene.player.tank.x;
+        const ty = this.scene.player.tank.y;
+
+        // enemy's x, y
+        const x = this.tank.x;
+        const y = this.tank.y;
+
+        const rotation = Phaser.Math.Angle.Between(x, y, tx, ty);
+        this.tank.rotation = rotation;
+
+        let d = Math.sqrt(Math.abs(tx - x) * Math.abs(tx - x) + Math.abs(ty - y) * Math.abs(ty - y))
+        if (d > 100) {
+            if (tx >= x) {
+                this.tank.x += this.tank_velocity / 6;
+            }
+            if (tx <= x) {
+                this.tank.x -= this.tank_velocity / 6;
+            }
+            if (ty >= y) {
+                this.tank.y += this.tank_velocity / 6;
+            }
+            if (ty <= y) {
+                this.tank.y -= this.tank_velocity / 6;
+            }
+        }
+
+        this.turret.move(this.tank.x, this.tank.y);
+    }
 }
 
 class Turret extends Phaser.Physics.Arcade.Sprite {
@@ -190,7 +220,8 @@ class AI {
         this.object = object;
     }
     revive() {
-        this.object.tankRotation(Math.round(Math.random()));
+        //this.object.tankRotation(Math.round(Math.random()));
+        this.object.followPlayer();
     }
 }
 
@@ -423,7 +454,7 @@ class OurScene extends Phaser.Scene {
 
         //AI
         this.enemies.animation(true);
-        //this.enemies.AI.revive();
+        this.enemies.AI.revive();
 
         // Text
         this.updateText();
