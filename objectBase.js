@@ -257,6 +257,7 @@ class OurScene extends Phaser.Scene {
     explosion;
 
     // PowerUps
+    quantity = 10;
     diamonds;
     diamond;
 
@@ -312,7 +313,7 @@ class OurScene extends Phaser.Scene {
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
         this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
-        this.spawnDiamonds(this, 10);
+        this.spawnDiamonds(this, this.quantity);
         this.diamond123 = new Diamond(this, 40, 40);
         //this.player.turret.changeBulletSpeed(30);
 
