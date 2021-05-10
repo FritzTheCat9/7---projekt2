@@ -256,6 +256,7 @@ class OurScene extends Phaser.Scene {
     explosion;
 
     // PowerUps
+    diamonds;
     diamond;
 
     // Sounds
@@ -310,7 +311,8 @@ class OurScene extends Phaser.Scene {
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
         this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
-        this.diamond123 = new Diamond(this, 400, 500);
+        this.diamonds = this.spawnDiamonds(10);
+        this.diamond123 = new Diamond(this, 40, 40);
         //this.player.turret.changeBulletSpeed(30);
 
         // Sound
@@ -371,6 +373,18 @@ class OurScene extends Phaser.Scene {
         });
     }
 
+    spawnDiamonds(quantity) {
+        this.scene.diamonds = new Array(quantity);
+        for (let i = 0; i < quantity; i++) {
+            const diamond = new Diamond(this, 400 + (i * 100), 500);
+            this.scene.diamonds[i] = diamond;
+        }
+        for (let i = 0; i < quantity; i++) {
+            this.scene.diamonds[i].animation(true);
+            this.scene.diamonds[i].canCollide();
+        }
+        console.log(this.scene.diamonds)
+    }
 
     update() {
 
