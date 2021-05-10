@@ -197,12 +197,14 @@ class AI {
 class Diamond extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y)
+        this.scene = scene;
         // Diamond
         this.diamond = scene.physics.add.sprite(200, 100, 'diamond');
         this.diamond.setOrigin(0.5, 0.5);
         this.diamond.x = x;
         this.diamond.y = y;
     }
+
     canCollide() {
         this.scene.physics.collide(this.diamond, this.scene.player.tank, () => this.collectDiamond());
     }
@@ -311,7 +313,7 @@ class OurScene extends Phaser.Scene {
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
         this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
-        this.diamonds = this.spawnDiamonds(10);
+        this.spawnDiamonds(this, 10);
         this.diamond123 = new Diamond(this, 40, 40);
         //this.player.turret.changeBulletSpeed(30);
 
@@ -373,17 +375,17 @@ class OurScene extends Phaser.Scene {
         });
     }
 
-    spawnDiamonds(quantity) {
-        this.scene.diamonds = new Array(quantity);
+    spawnDiamonds(scene, quantity) {
+        scene.diamonds = new Array(quantity);
         for (let i = 0; i < quantity; i++) {
             const diamond = new Diamond(this, 400 + (i * 100), 500);
-            this.scene.diamonds[i] = diamond;
+            scene.diamonds[i] = diamond;
         }
         for (let i = 0; i < quantity; i++) {
-            this.scene.diamonds[i].animation(true);
-            this.scene.diamonds[i].canCollide();
+            scene.diamonds[i].animation(true);
+            scene.diamonds[i].canCollide();
         }
-        console.log(this.scene.diamonds)
+        console.log(scene.diamonds)
     }
 
     update() {
