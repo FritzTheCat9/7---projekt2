@@ -223,30 +223,6 @@ class Diamond extends Phaser.Physics.Arcade.Sprite {
     }
 }
 
-/*class Diamonds extends Phaser.Physics.Arcade.Group {
-    constructor(scene) {
-        super(scene.physics.world, scene)
-        this.scene = scene;
-        this.createMultiple({
-            classType: Bullet,
-            frameQuantity: 10,
-            active: false,
-            visible: false,
-            key: "bullet0"
-        })
-    }
-
-    fireBullet(x, y, velocityX, velocityY, bullet_speed) {
-        const bullet = this.getFirstDead(false);
-        if (bullet) {
-            bullet.fire(x, y, velocityX, velocityY, bullet_speed);
-            this.scene.blasterSound.play();
-        }
-
-
-    }
-}*/
-
 class OurScene extends Phaser.Scene {
     constructor() {
         super();
@@ -436,10 +412,9 @@ class OurScene extends Phaser.Scene {
         // Diamond
         //this.diamond.anims.play("anim_diamond", true);
         this.diamond123.animation(true);
-        //this.diamond123.collectDiamond(this.tank);
+        this.diamond123.canCollide();
 
         // Collisions
-        this.diamond123.canCollide()
         //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
         this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies));
         // // this.physics.collide(this.enemies.tank, this.player.tank);
