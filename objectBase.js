@@ -77,6 +77,7 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
     tank_rotation_speed = 0.05;
     move_animation = 'anim_tank_move';
     tank_HP = 50;
+    follow_flag = true;
 
     constructor(scene, x, y, turret, tank, anim_tank_move, tankAtlas) {
         super(scene, x, y, tank)
@@ -121,6 +122,7 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         this.scene.explosion.anims.play("anim_tank_destroyed", false);
         this.scene.explosionSound.play();
 
+        this.follow_flag = false;
     }
     rotate(flag) {
         if (flag) {
@@ -149,35 +151,38 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         }
     }
     followPlayer() {
-        // target or player's x, y
-        const tx = this.scene.player.tank.x;
-        const ty = this.scene.player.tank.y;
+        if (this.follow_flag) {
+            // target or player's x, y
+            const tx = this.scene.player.tank.x;
+            const ty = this.scene.player.tank.y;
 
-        // enemy's x, y
-        const x = this.tank.x;
-        const y = this.tank.y;
+            // enemy's x, y
+            const x = this.tank.x;
+            const y = this.tank.y;
 
-        const rotation = Phaser.Math.Angle.Between(x, y, tx, ty);
-        this.tank.rotation = rotation;
+            const rotation = Phaser.Math.Angle.Between(x, y, tx, ty);
+            this.tank.rotation = rotation;
 
-        let d = Math.sqrt(Math.abs(tx - x) * Math.abs(tx - x) + Math.abs(ty - y) * Math.abs(ty - y))
-        if (d > 100) {
-            if (tx >= x) {
-                this.tank.x += this.tank_velocity / 6;
+            let d = Math.sqrt(Math.abs(tx - x) * Math.abs(tx - x) + Math.abs(ty - y) * Math.abs(ty - y))
+            if (d > 100) {
+                if (tx >= x) {
+                    this.tank.x += this.tank_velocity / 6;
+                }
+                if (tx <= x) {
+                    this.tank.x -= this.tank_velocity / 6;
+                }
+                if (ty >= y) {
+                    this.tank.y += this.tank_velocity / 6;
+                }
+                if (ty <= y) {
+                    this.tank.y -= this.tank_velocity / 6;
+                }
             }
-            if (tx <= x) {
-                this.tank.x -= this.tank_velocity / 6;
-            }
-            if (ty >= y) {
-                this.tank.y += this.tank_velocity / 6;
-            }
-            if (ty <= y) {
-                this.tank.y -= this.tank_velocity / 6;
-            }
+
+            this.turret.move(this.tank.x, this.tank.y);
+            this.turret.rotateTurret(tx, ty);
+            this.turret.fire(tx, ty);
         }
-
-        this.turret.move(this.tank.x, this.tank.y);
-        this.turret.rotateTurret(tx, ty)
     }
 }
 
@@ -224,9 +229,10 @@ class AI {
     constructor(object) {
         this.object = object;
     }
-    revive() {
+    revive(flag) {
         //this.object.tankRotation(Math.round(Math.random()));
-        this.object.followPlayer();
+        if (flag)
+            this.object.followPlayer(flag);
     }
 }
 
@@ -459,7 +465,8 @@ class OurScene extends Phaser.Scene {
 
         //AI
         this.enemies.animation(true);
-        this.enemies.AI.revive();
+        this.enemies.followPlayer();
+        //this.enemies.AI.revive(true);
 
         // Text
         this.updateText();
