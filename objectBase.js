@@ -177,6 +177,7 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         }
 
         this.turret.move(this.tank.x, this.tank.y);
+        this.turret.rotateTurret(tx, ty)
     }
 }
 
@@ -205,7 +206,11 @@ class Turret extends Phaser.Physics.Arcade.Sprite {
         this.turret.body.velocity.x = 0;
         this.turret.body.velocity.y = 0;
         this.turret.rotation = Phaser.Math.Angle.Between(this.turret.x, this.turret.y, this.scene.input.mousePointer.x + camera.scrollX, this.scene.input.mousePointer.y + camera.scrollY);
-
+    }
+    rotateTurret(toX, toY) {
+        this.turret.body.velocity.x = 0;
+        this.turret.body.velocity.y = 0;
+        this.turret.rotation = Phaser.Math.Angle.Between(this.turret.x, this.turret.y, toX, toY);
     }
     changeBulletSpeed(newBulletSpeed) {
         this.bullet_speed = newBulletSpeed;
