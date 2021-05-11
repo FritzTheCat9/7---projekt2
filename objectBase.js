@@ -541,7 +541,7 @@ class OurScene extends Phaser.Scene {
         // Collisions
         //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
         this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies));
-        this.physics.collide(this.player.tank, this.enemies.turret.bulletGroup, () => this.tankColide(this.player, this.enemies.turret.bulletGroup));
+        this.physics.overlap(this.player.tank, this.enemies.turret.bulletGroup, () => this.tankColide(this.player, this.enemies.turret.bulletGroup));
         this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.tankColide(this.enemies, this.player.turret.bulletGroup));
         this.physics.collide(this.enemies.tank, this.player.tank, () => this.tankColide2(this.enemies, this.player));
 
