@@ -179,6 +179,8 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
     }
     hit() {
         this.tank_HP -= 5;
+        this.turret.turret.x = this.tank.x;
+        this.turret.turret.y = this.tank.y;
         // this.bulletGroup.removeFromScene();
         //this.scene.remove("bullet0");
     }
