@@ -48,6 +48,11 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
             }
         }
     }
+    disable() {
+        this.setActive(false);
+        this.setVisible(false);
+        (this.getFirstAlive()).disable();
+    }
 }
 class Bullet extends Phaser.Physics.Arcade.Sprite {
     velocity = 600; // bullet_speed
@@ -103,13 +108,18 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
             this.setVisible(false);
         }
     }
+    disable() {
+        this.body.reset(-100, -100);
+        this.setActive(false);
+        this.setVisible(false);
+    }
 }
 
 class Tank extends Phaser.Physics.Arcade.Sprite {
     tank_velocity = 5;
     tank_rotation_speed = 0.05;
     move_animation = 'anim_tank_move';
-    tank_HP = 50;
+    tank_HP = 1000;
     follow_flag = true;
 
     constructor(scene, x, y, turret, tank, anim_tank_move, tankAtlas) {
@@ -139,6 +149,10 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         //AI
         this.AI = new AI(this);
         console.log(this)
+
+        //Colider
+        this.tank.setCollideWorldBounds(true);
+
     }
     disable() {
         this.tank.disableBody(true, true);
@@ -299,7 +313,7 @@ class Diamond extends Phaser.Physics.Arcade.Sprite {
         this.diamond.setVisible(false);
         this.scene.powerupSound.play();
         console.log(this)
-        this.scene.player.tank_HP = 50;
+        this.scene.player.tank_HP = 1000;
     }
     animation(flag) {
         if (flag) {
@@ -527,16 +541,29 @@ class OurScene extends Phaser.Scene {
         // Collisions
         //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
         this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies));
-        this.physics.overlap(this.player.tank, this.enemies.turret.bulletGroup, () => this.tankColide(this.player));
+        this.physics.collide(this.player.tank, this.enemies.turret.bulletGroup, () => this.tankColide(this.player, this.enemies.turret.bulletGroup));
+        this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.tankColide(this.enemies, this.player.turret.bulletGroup));
+        this.physics.collide(this.enemies.tank, this.player.tank, () => this.tankColide2(this.enemies, this.player));
+
         // // this.physics.collide(this.enemies.tank, this.player.tank);
         // this.player.tank.setBounce(0.2);
         // this.enemies.tank.setBounce(0.2);
         // this.physics.add.collider(this.player.tank, this.enemies.tank);
 
     }
-    tankColide(object) {
+    tankColide(object, pocisk) {
         object.hit();
+        pocisk.disable();
         console.log(object.tank_HP);
+        if (object.tank_HP < 0) {
+            this.disableObject(object)
+        }
+    }
+    tankColide2(tank1, tank2) {
+        for (let i = 0; i < 1; i++) {
+            tank1.tankRotation(false)
+            tank2.tankRotation(false)
+        };
     }
     disableObject(object) {
         object.disable();
