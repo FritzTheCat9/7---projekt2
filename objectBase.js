@@ -155,7 +155,7 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         console.log(this)
 
         //Colider
-        this.tank.setCollideWorldBounds(true);
+        //this.tank.setCollideWorldBounds(true);
 
     }
     disable() {
@@ -303,6 +303,9 @@ class AI {
 }
 
 class Diamond extends Phaser.Physics.Arcade.Sprite {
+
+    active = false;
+
     constructor(scene, x, y) {
         super(scene, x, y)
         this.scene = scene;
@@ -322,6 +325,7 @@ class Diamond extends Phaser.Physics.Arcade.Sprite {
         this.scene.powerupSound.play();
         console.log(this)
         this.scene.player.tank_HP = this.scene.max_level_hp;
+        this.active = false;
     }
     animation(flag) {
         if (flag) {
@@ -435,8 +439,9 @@ class OurScene extends Phaser.Scene {
         this.spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
+        this.player.tank.setCollideWorldBounds(true);
         this.spawnDiamonds(this, this.quantity);
-        this.diamond123 = new Diamond(this, 40, 40);
+        //this.diamond123 = new Diamond(this, 40, 40);
         //this.player.turret.changeBulletSpeed(30);
 
         // Sound
@@ -505,7 +510,6 @@ class OurScene extends Phaser.Scene {
         button_upgrade_hp.setScrollFactor(0);
         this.updateUpgradeHpButtonText();
 
-
         // Button - tank movement speed
         this.button_upgrade_movement_speed = this.add.text(230, 530, '', { fill: '#0f0' });
         this.button_upgrade_movement_speed.setScrollFactor(0);
@@ -532,10 +536,14 @@ class OurScene extends Phaser.Scene {
             .on('pointerdown', () => this.updateUpgradeBulletSpeedButtonText());
         button_upgrade_bullet_speed.setScrollFactor(0);
         this.updateUpgradeBulletSpeedButtonText();
+
+        // Enemies
+        this.spawnEnemies(this, this.iloscWrogow);
+
     }
 
     updateUpgradeBulletSpeedButtonText() {
-        if (this.money >= 50 && this.bullet_speed_level == 0) {
+        if (this.money >= 300 && this.bullet_speed_level == 0) {
             this.bullet_speed_level++;
             this.money -= 300;
             this.max_bullet_speed_level = 800;
@@ -560,7 +568,7 @@ class OurScene extends Phaser.Scene {
     }
 
     updateUpgradeRotationSpeedButtonText() {
-        if (this.money >= 50 && this.rotation_speed_level == 0) {
+        if (this.money >= 300 && this.rotation_speed_level == 0) {
             this.rotation_speed_level++;
             this.money -= 300;
             this.max_rotation_speed_level = 0.07;
@@ -582,7 +590,7 @@ class OurScene extends Phaser.Scene {
     }
 
     updateUpgradeMovementSpeedButtonText() {
-        if (this.money >= 50 && this.movement_speed_level == 0) {
+        if (this.money >= 300 && this.movement_speed_level == 0) {
             this.movement_speed_level++;
             this.money -= 300;
             this.max_movement_speed_level = 5;
@@ -604,7 +612,7 @@ class OurScene extends Phaser.Scene {
     }
 
     updateUpgradeHpButtonText() {
-        if (this.money >= 50 && this.hp_level == 0) {
+        if (this.money >= 300 && this.hp_level == 0) {
             this.hp_level++;
             this.money -= 300;
             this.max_level_hp = 300;
@@ -623,16 +631,13 @@ class OurScene extends Phaser.Scene {
             this.player.tank_HP = 1000;
         }
         this.button_upgrade_hp_text.setText(`(HP LEVEL ${this.hp_level} / 3)`);
-
-
-        this.spawnEnemies(this, this.iloscWrogow);
     }
 
     spawnDiamonds(scene, quantity) {
         scene.diamonds = new Array(quantity);
         for (let i = 0; i < quantity; i++) {
-            let x = Phaser.Math.Between(0, 1600);
-            let y = Phaser.Math.Between(0, 1200);
+            let x = -2000;
+            let y = -2000;
             //const diamond = new Diamond(this, 400 + (i * 100), 500);
             const diamond = new Diamond(this, x, y);
             scene.diamonds[i] = diamond;
@@ -647,7 +652,7 @@ class OurScene extends Phaser.Scene {
     spawnEnemies(scene) {
         scene.enemies = new Array(this.iloscWrogow);
         for (let i = 0; i < this.iloscWrogow; i++) {
-            const enemy = new Tank(this, (1800 + i * 100), (1800 + i * 100), "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
+            const enemy = new Tank(this, -2000, -2000, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
             enemy.tank.setActive(false);
             enemy.tank.setVisible(false);
             enemy.active = false;
@@ -664,8 +669,8 @@ class OurScene extends Phaser.Scene {
                 if (this.enemies[i].active === false) {
                     console.log(this.enemies[i])
 
-                    let x = Phaser.Math.Between(0, 1600);
-                    let y = Phaser.Math.Between(0, 1200);
+                    let x = Phaser.Math.Between(200, 1400);
+                    let y = Phaser.Math.Between(200, 1000);
                     this.enemies[i].active = true;
                     this.enemies[i].tank.setActive(true);
                     this.enemies[i].tank.setVisible(true);
@@ -680,6 +685,31 @@ class OurScene extends Phaser.Scene {
                     this.enemies[i].turret.turret.y = y;
 
                     this.enemies[i].follow_flag = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    nextSpawnTime2 = 5000;
+    spawnDelay2 = 10000;
+    showDiamonds() {
+        if (this.nextSpawnTime2 < this.time.now) {
+            this.nextSpawnTime2 = this.time.now + this.spawnDelay2;
+
+            for (let i = 0; i < this.quantity; i++) {
+                if (this.diamonds[i].active === false) {
+                    console.log(this.diamonds[i])
+
+                    let x = Phaser.Math.Between(200, 1400);
+                    let y = Phaser.Math.Between(200, 1000);
+                    this.diamonds[i].active = true;
+                    this.diamonds[i].diamond.setActive(true);
+                    this.diamonds[i].diamond.setVisible(true);
+                    this.diamonds[i].diamond.body.setEnable(true);
+                    this.diamonds[i].diamond.x = x;
+                    this.diamonds[i].diamond.y = y;
+
                     break;
                 }
             }
@@ -721,8 +751,6 @@ class OurScene extends Phaser.Scene {
         this.showEnemy();
 
 
-
-
         //AI
         for (let i = 0; i < this.iloscWrogow; i++) {
             if (this.enemies[i].active === true) {
@@ -737,19 +765,21 @@ class OurScene extends Phaser.Scene {
 
         // Diamond
         //this.diamond.anims.play("anim_diamond", true);
-        this.diamond123.animation(true);
-        this.diamond123.canCollide();
+        /*this.diamond123.animation(true);
+        this.diamond123.canCollide();*/
+
         for (let i = 0; i < 10; i++) {
             this.diamonds[i].animation(true);
             this.diamonds[i].canCollide();
         }
+        this.showDiamonds();
 
         // Collisions
         //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
         for (let i = 0; i < 10; i++) {
             this.physics.collide(this.enemies[i].tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies[i]));
-            this.physics.collide(this.player.tank, this.enemies[i].turret.bulletGroup, () => this.tankColide(this.player, this.enemies[i].turret.bulletGroup));
-            this.physics.collide(this.enemies[i].tank, this.player.turret.bulletGroup, () => this.tankColide(this.enemies[i], this.player.turret.bulletGroup));
+            this.physics.overlap(this.player.tank, this.enemies[i].turret.bulletGroup, () => this.tankColide(this.player, this.enemies[i].turret.bulletGroup));
+            this.physics.overlap(this.enemies[i].tank, this.player.turret.bulletGroup, () => this.tankColide(this.enemies[i], this.player.turret.bulletGroup));
             this.physics.collide(this.enemies[i].tank, this.player.tank, () => this.tankColide2(this.enemies[i], this.player));
         }
         // // this.physics.collide(this.enemies.tank, this.player.tank);
@@ -774,7 +804,7 @@ class OurScene extends Phaser.Scene {
     }
     disableObject(object) {
         object.disable();
-        this.money += 10000;
+        this.money += 100;
     }
     /*collectDiamond(diamond) {
         diamond.disableBody(true, true);
