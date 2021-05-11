@@ -35,6 +35,19 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
             }
         }
     }
+
+    fireBulletToTarget(x, y, velocityX, velocityY, bullet_speed, turret_rotation) {
+        const bullet = this.getFirstDead(false);
+
+        if (this.nextShotTime < this.scene.time.now) {
+            this.nextShotTime = this.scene.time.now + this.shotDelay;
+
+            if (bullet) {
+                bullet.fireToTarget(x, y, velocityX, velocityY, bullet_speed, turret_rotation);
+                this.scene.blasterSound.play();
+            }
+        }
+    }
 }
 class Bullet extends Phaser.Physics.Arcade.Sprite {
     velocity = 600; // bullet_speed
@@ -64,6 +77,21 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         // console.log(velocityY);
         // console.log("------------------------");
     }
+
+    fireToTarget(x, y, velocityX, velocityY, bullet_speed, turret_rotation) {
+        this.velocity = bullet_speed;
+        this.body.reset(x, y);
+        this.setActive(true);
+        this.setVisible(true);
+        this.newVelocity = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+        this.dzielnik = this.newVelocity / this.velocity;
+        this.setVelocityX(velocityX / this.dzielnik);
+        this.setVelocityY(velocityY / this.dzielnik);
+        var camera = this.scene.cameras.main;
+        //this.rotation = Phaser.Math.Angle.Between(x, y, velocityX + camera.scrollX, velocityY + camera.scrollY) + 1.57; 
+        this.rotation = turret_rotation + 1.57;
+    }
+
     // preUpdate(time, delta) {
     //     super.preUpdate(time, delta);
     // }
@@ -74,7 +102,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
             this.setActive(false);
             this.setVisible(false);
         }
-
     }
 }
 
@@ -132,6 +159,8 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
     }
     hit() {
         this.tank_HP -= 5;
+        // this.bulletGroup.removeFromScene();
+        //this.scene.remove("bullet0");
     }
     rotate(flag) {
         if (flag) {
@@ -166,7 +195,8 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
             const ty = this.scene.player.tank.y;
 
             // enemy's x, y
-            const x = this.tank.x;
+            var camera = this.scene.cameras.main;
+            const x = this.tank.x
             const y = this.tank.y;
 
             const rotation = Phaser.Math.Angle.Between(x, y, tx, ty);
@@ -190,7 +220,8 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
 
             this.turret.move(this.tank.x, this.tank.y);
             this.turret.rotateTurret(tx, ty);
-            this.turret.fire(tx, ty);
+            //this.turret.fire(tx, ty);
+            this.turret.fireToTarget(tx, ty);
         }
     }
 }
@@ -232,6 +263,10 @@ class Turret extends Phaser.Physics.Arcade.Sprite {
     fire(mouseX, mouseY) {
         var camera = this.scene.cameras.main;
         this.bulletGroup.fireBullet(this.turret.x, this.turret.y, mouseX + camera.scrollX - this.turret.x, mouseY + camera.scrollY - this.turret.y, this.bullet_speed);
+    }
+    fireToTarget(targetX, targetY) {
+        var camera = this.scene.cameras.main;
+        this.bulletGroup.fireBulletToTarget(this.turret.x, this.turret.y, targetX - this.turret.x, targetY - this.turret.y, this.bullet_speed, this.turret.rotation);
     }
 }
 class AI {
@@ -492,6 +527,7 @@ class OurScene extends Phaser.Scene {
         // Collisions
         //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
         this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies));
+        this.physics.overlap(this.player.tank, this.enemies.turret.bulletGroup, () => this.tankColide(this.player));
         // // this.physics.collide(this.enemies.tank, this.player.tank);
         // this.player.tank.setBounce(0.2);
         // this.enemies.tank.setBounce(0.2);
@@ -499,14 +535,8 @@ class OurScene extends Phaser.Scene {
 
     }
     tankColide(object) {
-        if (this.keyW.isDown) {
-            object.tankRotation(false);
-        }
-        else if (this.keyS.isDown) {
-            object.tankRotation(true);
-        }
-        this.hp -= 10;
-
+        object.hit();
+        console.log(object.tank_HP);
     }
     disableObject(object) {
         object.disable();
