@@ -18,10 +18,11 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
             visible: false,
             key: "bullet0"
         })
+        Phaser.Actions.SetXY(this.getChildren(), -200, -200);
     }
 
-    nextShotTime = 1000;
-    shotDelay = 1000;
+    nextShotTime = 2000;
+    shotDelay = 2000;
 
     fireBullet(x, y, velocityX, velocityY, bullet_speed) {
         const bullet = this.getFirstDead(false);
@@ -60,6 +61,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     dzielnik = 1;
     constructor(scene, x, y) {
         super(scene, x, y, 'bullet0')
+
     }
 
     fire(x, y, velocityX, velocityY, bullet_speed) {
@@ -116,10 +118,10 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 }
 
 class Tank extends Phaser.Physics.Arcade.Sprite {
-    tank_velocity = 5;
+    tank_velocity = 3;
     tank_rotation_speed = 0.05;
     move_animation = 'anim_tank_move';
-    tank_HP = 1000;
+    tank_HP = 100;
     follow_flag = true;
 
     constructor(scene, x, y, turret, tank, anim_tank_move, tankAtlas) {
@@ -313,7 +315,7 @@ class Diamond extends Phaser.Physics.Arcade.Sprite {
         this.diamond.setVisible(false);
         this.scene.powerupSound.play();
         console.log(this)
-        this.scene.player.tank_HP = 1000;
+        this.scene.player.tank_HP = this.scene.max_level_hp;
     }
     animation(flag) {
         if (flag) {
@@ -368,6 +370,19 @@ class OurScene extends Phaser.Scene {
 
     // Background
     background;
+
+    // Buttons 
+    hp_level = 0;
+    max_level_hp = 100;
+
+    movement_speed_level = 0;
+    max_movement_speed_level = 10;
+
+    rotation_speed_level = 0;
+    max_rotation_speed_level = 0.10;
+
+    bullet_speed_level = 0;
+    max_bullet_speed_level = 400;
 
     preload() {
         this.load.baseURL = 'https://examples.phaser.io/';
@@ -473,6 +488,134 @@ class OurScene extends Phaser.Scene {
             }),
             repeat: -1
         });
+
+        // Button - tank HP
+        this.button_upgrade_hp_text = this.add.text(120, 500, '', { fill: '#0f0' });
+        this.button_upgrade_hp_text.setScrollFactor(0);
+        const button_upgrade_hp = this.add.text(10, 500, 'Upgrade HP', { fill: '#00f' })
+            .setInteractive()
+            .on('pointerdown', () => this.updateUpgradeHpButtonText());
+        button_upgrade_hp.setScrollFactor(0);
+        this.updateUpgradeHpButtonText();
+
+
+        // Button - tank movement speed
+        this.button_upgrade_movement_speed = this.add.text(230, 530, '', { fill: '#0f0' });
+        this.button_upgrade_movement_speed.setScrollFactor(0);
+        const button_upgrade_movement = this.add.text(10, 530, 'Upgrade movement speed', { fill: '#00f' })
+            .setInteractive()
+            .on('pointerdown', () => this.updateUpgradeMovementSpeedButtonText());
+        button_upgrade_movement.setScrollFactor(0);
+        this.updateUpgradeMovementSpeedButtonText();
+
+        // Button - tank rotation speed
+        this.button_upgrade_rotation_speed_level = this.add.text(230, 560, '', { fill: '#0f0' });
+        this.button_upgrade_rotation_speed_level.setScrollFactor(0);
+        const button_upgrade_rotation = this.add.text(10, 560, 'Upgrade rotation speed', { fill: '#00f' })
+            .setInteractive()
+            .on('pointerdown', () => this.updateUpgradeRotationSpeedButtonText());
+        button_upgrade_rotation.setScrollFactor(0);
+        this.updateUpgradeRotationSpeedButtonText();
+
+        // Button - tank rotation speed
+        this.button_upgrade_bullet_speed_level = this.add.text(230, 470, '', { fill: '#0f0' });
+        this.button_upgrade_bullet_speed_level.setScrollFactor(0);
+        const button_upgrade_bullet_speed = this.add.text(10, 470, 'Upgrade bullet speed', { fill: '#00f' })
+            .setInteractive()
+            .on('pointerdown', () => this.updateUpgradeBulletSpeedButtonText());
+        button_upgrade_bullet_speed.setScrollFactor(0);
+        this.updateUpgradeBulletSpeedButtonText();
+    }
+
+    updateUpgradeBulletSpeedButtonText() {
+        if (this.money >= 50 && this.bullet_speed_level == 0) {
+            this.bullet_speed_level++;
+            this.money -= 300;
+            this.max_bullet_speed_level = 800;
+            this.player.turret.bulletGroup.nextShotTime = 800;
+            this.player.turret.bulletGroup.shotDelay = 800;
+        }
+        else if (this.money >= 500 && this.bullet_speed_level == 1) {
+            this.bullet_speed_level++;
+            this.money -= 500;
+            this.max_bullet_speed_level = 600;
+            this.player.turret.bulletGroup.nextShotTime = 600;
+            this.player.turret.bulletGroup.shotDelay = 600;
+        }
+        else if (this.money >= 1000 && this.bullet_speed_level == 2) {
+            this.bullet_speed_level++;
+            this.money -= 1000;
+            this.max_bullet_speed_level = 400;
+            this.player.turret.bulletGroup.nextShotTime = 400;
+            this.player.turret.bulletGroup.shotDelay = 400;
+        }
+        this.button_upgrade_bullet_speed_level.setText(`(BULLET SPEED LEVEL ${this.bullet_speed_level} / 3)`);
+    }
+
+    updateUpgradeRotationSpeedButtonText() {
+        if (this.money >= 50 && this.rotation_speed_level == 0) {
+            this.rotation_speed_level++;
+            this.money -= 300;
+            this.max_rotation_speed_level = 0.07;
+            this.player.tank_rotation_speed = 0.07;
+        }
+        else if (this.money >= 500 && this.rotation_speed_level == 1) {
+            this.rotation_speed_level++;
+            this.money -= 500;
+            this.max_rotation_speed_level = 0.09;
+            this.player.tank_rotation_speed = 0.09;
+        }
+        else if (this.money >= 1000 && this.rotation_speed_level == 2) {
+            this.rotation_speed_level++;
+            this.money -= 1000;
+            this.max_rotation_speed_level = 0.11;
+            this.player.tank_rotation_speed = 0.11;
+        }
+        this.button_upgrade_rotation_speed_level.setText(`(ROTATION SPEED LEVEL ${this.rotation_speed_level} / 3)`);
+    }
+
+    updateUpgradeMovementSpeedButtonText() {
+        if (this.money >= 50 && this.movement_speed_level == 0) {
+            this.movement_speed_level++;
+            this.money -= 300;
+            this.max_movement_speed_level = 5;
+            this.player.tank_velocity = 5;
+        }
+        else if (this.money >= 500 && this.movement_speed_level == 1) {
+            this.movement_speed_level++;
+            this.money -= 500;
+            this.max_movement_speed_level = 7;
+            this.player.tank_velocity = 7;
+        }
+        else if (this.money >= 1000 && this.movement_speed_level == 2) {
+            this.movement_speed_level++;
+            this.money -= 1000;
+            this.max_movement_speed_level = 10;
+            this.player.tank_velocity = 10;
+        }
+        this.button_upgrade_movement_speed.setText(`(MOVEMENT SPEED LEVEL ${this.movement_speed_level} / 3)`);
+    }
+
+    updateUpgradeHpButtonText() {
+        if (this.money >= 50 && this.hp_level == 0) {
+            this.hp_level++;
+            this.money -= 300;
+            this.max_level_hp = 300;
+            this.player.tank_HP = 300;
+        }
+        else if (this.money >= 500 && this.hp_level == 1) {
+            this.hp_level++;
+            this.money -= 500;
+            this.max_level_hp = 500;
+            this.player.tank_HP = 500;
+        }
+        else if (this.money >= 1000 && this.hp_level == 2) {
+            this.hp_level++;
+            this.money -= 1000;
+            this.max_level_hp = 1000;
+            this.player.tank_HP = 1000;
+        }
+        this.button_upgrade_hp_text.setText(`(HP LEVEL ${this.hp_level} / 3)`);
     }
 
     spawnDiamonds(scene, quantity) {
@@ -567,7 +710,7 @@ class OurScene extends Phaser.Scene {
     }
     disableObject(object) {
         object.disable();
-        this.money += 50;
+        this.money += 10000;
     }
     /*collectDiamond(diamond) {
         diamond.disableBody(true, true);
