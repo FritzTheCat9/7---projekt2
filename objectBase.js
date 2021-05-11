@@ -124,6 +124,8 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
     tank_HP = 100;
     follow_flag = true;
 
+    active = false;
+
     constructor(scene, x, y, turret, tank, anim_tank_move, tankAtlas) {
         super(scene, x, y, tank)
         // Tank
@@ -172,6 +174,8 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         this.scene.explosionSound.play();
 
         this.follow_flag = false;
+
+        this.active = false;
     }
     hit() {
         this.tank_HP -= 5;
@@ -384,6 +388,8 @@ class OurScene extends Phaser.Scene {
     bullet_speed_level = 0;
     max_bullet_speed_level = 400;
 
+    iloscWrogow = 10;
+
     preload() {
         this.load.baseURL = 'https://examples.phaser.io/';
 
@@ -427,7 +433,6 @@ class OurScene extends Phaser.Scene {
         this.spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
-        this.enemies = new Tank(this, 100, 200, "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
         this.spawnDiamonds(this, this.quantity);
         this.diamond123 = new Diamond(this, 40, 40);
         //this.player.turret.changeBulletSpeed(30);
@@ -616,6 +621,9 @@ class OurScene extends Phaser.Scene {
             this.player.tank_HP = 1000;
         }
         this.button_upgrade_hp_text.setText(`(HP LEVEL ${this.hp_level} / 3)`);
+
+
+        this.spawnEnemies(this, this.iloscWrogow);
     }
 
     spawnDiamonds(scene, quantity) {
@@ -632,6 +640,48 @@ class OurScene extends Phaser.Scene {
             scene.diamonds[i].canCollide();
         }*/
         console.log(scene.diamonds);
+    }
+
+    spawnEnemies(scene) {
+        scene.enemies = new Array(this.iloscWrogow);
+        for (let i = 0; i < this.iloscWrogow; i++) {
+            const enemy = new Tank(this, (1800 + i * 100), (1800 + i * 100), "turret", "tank", "anim_enemy_tank_move", "enemyTankAtlas");
+            enemy.tank.setActive(false);
+            enemy.tank.setVisible(false);
+            enemy.active = false;
+            scene.enemies[i] = enemy;
+        }
+    }
+    nextSpawnTime1 = 3000;
+    spawnDelay1 = 5000;
+    showEnemy() {
+        if (this.nextSpawnTime1 < this.time.now) {
+            this.nextSpawnTime1 = this.time.now + this.spawnDelay1;
+
+            for (let i = 0; i < this.iloscWrogow; i++) {
+                if (this.enemies[i].active === false) {
+                    console.log(this.enemies[i])
+
+                    let x = Phaser.Math.Between(0, 1600);
+                    let y = Phaser.Math.Between(0, 1200);
+                    this.enemies[i].active = true;
+                    this.enemies[i].tank.setActive(true);
+                    this.enemies[i].tank.setVisible(true);
+                    this.enemies[i].tank.body.setEnable(true);
+                    this.enemies[i].turret.turret.setActive(true);
+                    this.enemies[i].turret.turret.setVisible(true);
+                    this.enemies[i].turret.turret.body.setEnable(true);
+                    this.enemies[i].tank.x = x;
+                    this.enemies[i].tank.y = y;
+
+                    this.enemies[i].turret.turret.x = x;
+                    this.enemies[i].turret.turret.y = y;
+
+                    this.enemies[i].follow_flag = true;
+                    break;
+                }
+            }
+        }
     }
 
     update() {
@@ -664,9 +714,20 @@ class OurScene extends Phaser.Scene {
             );
         }
 
+
+
+        this.showEnemy();
+
+
+
+
         //AI
-        this.enemies.animation(true);
-        this.enemies.followPlayer();
+        for (let i = 0; i < this.iloscWrogow; i++) {
+            if (this.enemies[i].active === true) {
+                this.enemies[i].animation(true);
+                this.enemies[i].followPlayer();
+            }
+        }
         //this.enemies.AI.revive(true);
 
         // Text
@@ -683,11 +744,12 @@ class OurScene extends Phaser.Scene {
 
         // Collisions
         //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
-        this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies));
-        this.physics.overlap(this.player.tank, this.enemies.turret.bulletGroup, () => this.tankColide(this.player, this.enemies.turret.bulletGroup));
-        this.physics.collide(this.enemies.tank, this.player.turret.bulletGroup, () => this.tankColide(this.enemies, this.player.turret.bulletGroup));
-        this.physics.collide(this.enemies.tank, this.player.tank, () => this.tankColide2(this.enemies, this.player));
-
+        for (let i = 0; i < 10; i++) {
+            this.physics.collide(this.enemies[i].tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies[i]));
+            this.physics.collide(this.player.tank, this.enemies[i].turret.bulletGroup, () => this.tankColide(this.player, this.enemies[i].turret.bulletGroup));
+            this.physics.collide(this.enemies[i].tank, this.player.turret.bulletGroup, () => this.tankColide(this.enemies[i], this.player.turret.bulletGroup));
+            this.physics.collide(this.enemies[i].tank, this.player.tank, () => this.tankColide2(this.enemies[i], this.player));
+        }
         // // this.physics.collide(this.enemies.tank, this.player.tank);
         // this.player.tank.setBounce(0.2);
         // this.enemies.tank.setBounce(0.2);
