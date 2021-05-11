@@ -147,11 +147,14 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
         this.active = false;
     }
     hit() {
-        this.tank_HP -= 5;
+        this.tank_HP -= 10;
         this.turret.turret.x = this.tank.x;
         this.turret.turret.y = this.tank.y;
-        // this.bulletGroup.removeFromScene();
-        //this.scene.remove("bullet0");
+
+        if (this.tank_HP <= 0) {
+            game.scene.start('SceneEndGame');
+            game.scene.remove("OurScene");
+        }
     }
     rotate(flag) {
         if (flag) {
@@ -297,7 +300,7 @@ class Diamond extends Phaser.Physics.Arcade.Sprite {
 
 class OurScene extends Phaser.Scene {
     constructor() {
-        super();
+        super('OurScene');
     }
     turret;
 
@@ -754,6 +757,24 @@ class OurScene extends Phaser.Scene {
         ]);
     }
 }
+
+class SceneEndGame extends Phaser.Scene {
+
+    constructor() {
+        super('SceneEndGame');
+    }
+
+    create() {
+        this.background = this.add.tileSprite(0, 0, mapWidth, mapHeight, 'lightGrass');
+        this.background.setOrigin(0)
+
+        this.text = this.add.text(160, 280, '', { fill: '#fff' });
+        this.text.setScrollFactor(0);
+        this.text.setFontSize(30);
+        this.text.setText(`GAME OVER - F5 to try again`);
+    }
+}
+
 var gameWidth = 800;
 var gameHeight = 600;
 var mapWidth = 1600;
@@ -769,7 +790,8 @@ var config = {
             debug: false
         }
     },
-    scene: OurScene
+    // scene: OurScene,
+    scene: [OurScene, SceneEndGame]
 };
 
 game = new Phaser.Game(config);
