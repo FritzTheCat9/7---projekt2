@@ -1,12 +1,4 @@
-//Classes
 
-// function sleep(milliseconds) {
-//     const date = Date.now();
-//     let currentDate = null;
-//     do {
-//         currentDate = Date.now();
-//     } while (currentDate - date < milliseconds);
-// }
 class BulletGroup extends Phaser.Physics.Arcade.Group {
     constructor(scene) {
         super(scene.physics.world, scene)
@@ -20,10 +12,8 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
         })
         Phaser.Actions.SetXY(this.getChildren(), -200, -200);
     }
-
     nextShotTime = 2000;
     shotDelay = 2000;
-
     fireBullet(x, y, velocityX, velocityY, bullet_speed) {
         const bullet = this.getFirstDead(false);
 
@@ -36,7 +26,6 @@ class BulletGroup extends Phaser.Physics.Arcade.Group {
             }
         }
     }
-
     fireBulletToTarget(x, y, velocityX, velocityY, bullet_speed, turret_rotation) {
         const bullet = this.getFirstDead(false);
 
@@ -63,7 +52,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, 'bullet0')
 
     }
-
     fire(x, y, velocityX, velocityY, bullet_speed) {
         this.velocity = bullet_speed;
 
@@ -78,13 +66,8 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
         //Camera
         var camera = this.scene.cameras.main;
-
         this.rotation = Phaser.Math.Angle.Between(x, y, game.input.mousePointer.x + camera.scrollX, game.input.mousePointer.y + camera.scrollY) + 1.57;
-        // this.rotation = Phaser.Math.Angle.Between(x, y, this.input.mousePointer.x, this.input.mousePointer.y) + 1.57;
-        // console.log(velocityY);
-        // console.log("------------------------");
     }
-
     fireToTarget(x, y, velocityX, velocityY, bullet_speed, turret_rotation) {
         this.velocity = bullet_speed;
         this.body.reset(x, y);
@@ -95,13 +78,8 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityX(velocityX / this.dzielnik);
         this.setVelocityY(velocityY / this.dzielnik);
         var camera = this.scene.cameras.main;
-        //this.rotation = Phaser.Math.Angle.Between(x, y, velocityX + camera.scrollX, velocityY + camera.scrollY) + 1.57; 
         this.rotation = turret_rotation + 1.57;
     }
-
-    // preUpdate(time, delta) {
-    //     super.preUpdate(time, delta);
-    // }
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
 
@@ -149,14 +127,6 @@ class Tank extends Phaser.Physics.Arcade.Sprite {
 
         //Turret
         this.turret = new Turret(scene, x, y, turret, tankAtlas);
-
-        //AI
-        this.AI = new AI(this);
-        console.log(this)
-
-        //Colider
-        //this.tank.setCollideWorldBounds(true);
-
     }
     disable() {
         this.tank.disableBody(true, true);
@@ -291,16 +261,6 @@ class Turret extends Phaser.Physics.Arcade.Sprite {
         this.bulletGroup.fireBulletToTarget(this.turret.x, this.turret.y, targetX - this.turret.x, targetY - this.turret.y, this.bullet_speed, this.turret.rotation);
     }
 }
-class AI {
-    constructor(object) {
-        this.object = object;
-    }
-    revive(flag) {
-        //this.object.tankRotation(Math.round(Math.random()));
-        if (flag)
-            this.object.followPlayer(flag);
-    }
-}
 
 class Diamond extends Phaser.Physics.Arcade.Sprite {
 
@@ -358,7 +318,6 @@ class OurScene extends Phaser.Scene {
     text;
 
     // Statystyki - wyświetlone na ekranie
-    //tank_HP = 50;
     money = 0;
     level = 1;
 
@@ -441,8 +400,6 @@ class OurScene extends Phaser.Scene {
         this.player = new Tank(this, 400, 300, "turret", "tank", "anim_tank_move", "tankAtlas");
         this.player.tank.setCollideWorldBounds(true);
         this.spawnDiamonds(this, this.quantity);
-        //this.diamond123 = new Diamond(this, 40, 40);
-        //this.player.turret.changeBulletSpeed(30);
 
         // Sound
         this.blasterSound = this.sound.add("blasterSound");
@@ -469,7 +426,6 @@ class OurScene extends Phaser.Scene {
         });
 
         // Diamond
-        //this.diamond = this.physics.add.sprite(200, 100, 'diamond');
         this.anims.create({
             key: "anim_diamond",
             frameRate: 2,
@@ -638,14 +594,9 @@ class OurScene extends Phaser.Scene {
         for (let i = 0; i < quantity; i++) {
             let x = -2000;
             let y = -2000;
-            //const diamond = new Diamond(this, 400 + (i * 100), 500);
             const diamond = new Diamond(this, x, y);
             scene.diamonds[i] = diamond;
         }
-        /*for (let i = 0; i < quantity; i++) {
-            scene.diamonds[i].animation(true);
-            scene.diamonds[i].canCollide();
-        }*/
         console.log(scene.diamonds);
     }
 
@@ -746,10 +697,7 @@ class OurScene extends Phaser.Scene {
             );
         }
 
-
-
         this.showEnemy();
-
 
         //AI
         for (let i = 0; i < this.iloscWrogow; i++) {
@@ -758,16 +706,11 @@ class OurScene extends Phaser.Scene {
                 this.enemies[i].followPlayer();
             }
         }
-        //this.enemies.AI.revive(true);
 
         // Text
         this.updateText();
 
         // Diamond
-        //this.diamond.anims.play("anim_diamond", true);
-        /*this.diamond123.animation(true);
-        this.diamond123.canCollide();*/
-
         for (let i = 0; i < 10; i++) {
             this.diamonds[i].animation(true);
             this.diamonds[i].canCollide();
@@ -775,18 +718,12 @@ class OurScene extends Phaser.Scene {
         this.showDiamonds();
 
         // Collisions
-        //this.physics.collide(this.diamond, this.player.tank, () => this.collectDiamond(this.diamond));
         for (let i = 0; i < 10; i++) {
             this.physics.collide(this.enemies[i].tank, this.player.turret.bulletGroup, () => this.disableObject(this.enemies[i]));
             this.physics.overlap(this.player.tank, this.enemies[i].turret.bulletGroup, () => this.tankColide(this.player, this.enemies[i].turret.bulletGroup));
             this.physics.overlap(this.enemies[i].tank, this.player.turret.bulletGroup, () => this.tankColide(this.enemies[i], this.player.turret.bulletGroup));
             this.physics.collide(this.enemies[i].tank, this.player.tank, () => this.tankColide2(this.enemies[i], this.player));
         }
-        // // this.physics.collide(this.enemies.tank, this.player.tank);
-        // this.player.tank.setBounce(0.2);
-        // this.enemies.tank.setBounce(0.2);
-        // this.physics.add.collider(this.player.tank, this.enemies.tank);
-
     }
     tankColide(object, pocisk) {
         object.hit();
@@ -806,11 +743,6 @@ class OurScene extends Phaser.Scene {
         object.disable();
         this.money += 100;
     }
-    /*collectDiamond(diamond) {
-        diamond.disableBody(true, true);
-        this.tank_HP = 50;
-        this.powerupSound.play();
-    }*/
     updateText() {
         this.data.set('HP', this.player.tank_HP);
         this.data.set('Money', this.money);
@@ -832,11 +764,10 @@ var config = {
     width: gameWidth,
     height: gameHeight,
     backgroundColor: "48a",
-    // parent: 'phaser-example',
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: false
         }
     },
     scene: OurScene
